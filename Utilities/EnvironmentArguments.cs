@@ -43,12 +43,6 @@ namespace BonGames.Tools
             /// The port at which you can access the query protocol data.
             /// </summary>
             public const string QueryPort = "-queryPort";
-
-
-            // Build Arguments
-            public const string BuildAppTarget = "-buildAppTarget";
-            public const string BuildEnvironment = "-buildEnv";
-            public const string BuildPlatformTarget = "-buildPlatformTarget";
         }
 
         public static Dictionary<string, string> StartupArguments { get; private set; }

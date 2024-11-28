@@ -333,16 +333,16 @@ namespace BonGames.EasyBuilder
             {
                 if (!Application.isBatchMode) throw new System.Exception("This method only supports batmode for now");
 
-                if (!System.Enum.TryParse<EEnvironment>(EnvironmentArguments.GetEnvironmentArgument(EnvironmentArguments.Key.BuildEnvironment), true, out EEnvironment env))
-                    throw new System.Exception($"Build Environment is invalid with value {EnvironmentArguments.GetEnvironmentArgument(EnvironmentArguments.Key.BuildEnvironment)}");
+                if (!System.Enum.TryParse<EEnvironment>(EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildEnvironment), true, out EEnvironment env))
+                    throw new System.Exception($"Build Environment is invalid with value {EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildEnvironment)}");
 
 
-                if (!System.Enum.TryParse<EAppTarget>(EnvironmentArguments.GetEnvironmentArgument(EnvironmentArguments.Key.BuildAppTarget), true, out EAppTarget appTarget))
-                    throw new System.Exception($"App Target is invalid with value {EnvironmentArguments.GetEnvironmentArgument(EnvironmentArguments.Key.BuildAppTarget)}");
+                if (!System.Enum.TryParse<EAppTarget>(EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildAppTarget), true, out EAppTarget appTarget))
+                    throw new System.Exception($"App Target is invalid with value {EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildAppTarget)}");
 
 
-                if (!System.Enum.TryParse<BuildTarget>(EnvironmentArguments.GetEnvironmentArgument(EnvironmentArguments.Key.BuildPlatformTarget), true, out BuildTarget buildTarget))
-                    throw new System.Exception($"Build Platform Target is invalid with value {EnvironmentArguments.GetEnvironmentArgument(EnvironmentArguments.Key.BuildPlatformTarget)}");
+                if (!System.Enum.TryParse<BuildTarget>(EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildPlatformTarget), true, out BuildTarget buildTarget))
+                    throw new System.Exception($"Build Platform Target is invalid with value {EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildPlatformTarget)}");
 
                 ProjectBuilder.CreateBuilder(appTarget, buildTarget, env).Build();
             }

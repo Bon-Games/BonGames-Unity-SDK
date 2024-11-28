@@ -6,6 +6,10 @@ namespace BonGames.EasyBuilder
     {
         public static class Key
         {
+            // Build Arguments
+            public const string BuildAppTarget = "-buildAppTarget";
+            public const string BuildEnvironment = "-buildEnv";
+            public const string BuildPlatformTarget = "-buildPlatformTarget";
             public const string BuildNumber         = "-buildNumber";
 
             // Android specified
