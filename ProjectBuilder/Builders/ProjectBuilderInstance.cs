@@ -20,7 +20,9 @@ namespace BonGames.EasyBuilder
                 case BuildTarget.Android:
                     s_instance = new AndroidBuilder(buildEvn);
                     break;
-
+                case BuildTarget.iOS:
+                    s_instance = new IOSBuilder(buildEvn);
+                    break;
                 default:
                     return null;
             }

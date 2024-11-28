@@ -19,7 +19,7 @@ namespace BonGames.EasyBuilder
             LoadVersion();
         }
 
-        private void LoadVersion()
+        public void LoadVersion()
         {
             if (System.IO.File.Exists(VersionFile))
             {

@@ -46,8 +46,8 @@ namespace BonGames.EasyBuilder
             }
 
             // Create build options
+            Version.LoadVersion();
             BuildPlayerOptions = CreateBuildPlayerOptions();
-
             // Pre Build
             if (PreBuildProcess != null)
             {
@@ -96,11 +96,14 @@ namespace BonGames.EasyBuilder
 
         protected virtual void UpdateAppVersion()
         {
+            int buildNumber = BuildArguments.GetBuildNumber(-1);
+            buildNumber = buildNumber > 0 ? buildNumber : Version.Build;
+
             // Set all in once here, reduce complexity, if you want to set by your own logic, lets override this method
             PlayerSettings.bundleVersion = Version.BundleVersion;
-            PlayerSettings.Android.bundleVersionCode = Version.Build;
-            PlayerSettings.iOS.buildNumber = $"{Version.Build}";
-            PlayerSettings.WSA.packageVersion = new System.Version(Version.Major, Version.Minor, Version.Build, Version.Revision);
+            PlayerSettings.Android.bundleVersionCode = buildNumber;
+            PlayerSettings.iOS.buildNumber = $"{buildNumber}";
+            PlayerSettings.WSA.packageVersion = new System.Version(Version.Major, Version.Minor, buildNumber, Version.Revision);
         }
 
         protected virtual void SetProductName() { }
