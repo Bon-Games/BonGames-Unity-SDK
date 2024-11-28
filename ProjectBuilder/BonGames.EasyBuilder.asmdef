@@ -1,0 +1,18 @@
+{
+    "name": "BonGames.EasyBuilder",
+    "rootNamespace": "BonGames.EasyBuilder",
+    "references": [
+        "GUID:ac1ce8ec42af1ca4daeac083e04303bd"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
