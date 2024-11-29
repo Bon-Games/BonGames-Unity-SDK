@@ -23,7 +23,10 @@ namespace BonGames.EasyBuilder
 
         protected string BuildInformationDirectory => BuilderUtils.BuildInformationDirectory();
 
-        protected virtual List<string> PlatformSpecifiedSymbols { get; }
+        protected virtual List<string> PlatformSpecifiedSymbols { get; private set; } = new List<string>()
+        {
+            BuildDefines.EnableIL2CppScriptBackend,
+        };
 
         protected BuildPlayerOptions BuildPlayerOptions { get; set; }
 
@@ -35,9 +38,11 @@ namespace BonGames.EasyBuilder
             BuildTarget = buildTarget;
             Environment = environment;
         }
+        
 
         public void Build()
         {
+            Prepare();
             BonGames.Tools.EnvironmentArguments.Load();
             // Switch to build target
             BuildTargetGroup buildGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
@@ -83,6 +88,13 @@ namespace BonGames.EasyBuilder
             }
         }
 
+        protected virtual void Prepare()
+        {
+            PreProcessBuildWithReport = new DefaultPreProcessBuildWithReportPreset();
+            PreProcessBuildWithReport.Tasks.Add(new IL2CppPreprocessBuild());
+
+            PostProcessingWithReport = new DefaultPostProcessBuildWithReportPreset();
+        }
         protected void SetProductInformation()
         {
             SetProductName();
@@ -92,7 +104,7 @@ namespace BonGames.EasyBuilder
 
         protected virtual void SetupInternally()
         {
-            PlayerSettings.SetScriptingBackend(BuilderUtils.GetActiveBuildTargetGroup(), ScriptingImplementation.IL2CPP);
+            
         }
 
         protected virtual void UpdateAppVersion()
@@ -159,6 +171,7 @@ namespace BonGames.EasyBuilder
             List<string> defines = null;
             switch (Environment)
             {
+                case EEnvironment.Debug:
                 case EEnvironment.Development:
                     {
                         options = BuildOptions.Development;
@@ -230,5 +243,15 @@ namespace BonGames.EasyBuilder
             }
             return activeScenes.ToArray();
         }
+    }
+
+    internal class DefaultPreProcessBuildWithReportPreset : IPreProcessBuildWithReportPreset
+    {
+        public List<IPreProcessBuildWithReportTask> Tasks { get; private set; } = new();
+    }
+    
+    internal class DefaultPostProcessBuildWithReportPreset : IPostProcessBuildWithReportPreset
+    {
+        public List<IPostProcessBuildWithReportTask> Tasks { get; private set; } = new();
     }
 }
