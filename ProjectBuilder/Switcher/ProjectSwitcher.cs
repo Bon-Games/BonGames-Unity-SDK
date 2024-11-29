@@ -11,7 +11,7 @@ namespace BonGames.EasyBuilder
 
         public static void SetEditorRunAsRemoteClient()
         {
-            BuildPlayerOptions op = EasyBuilder.GetDefaultBuildPlayerOptions(EAppTarget.Client, EEnvironment.Staging);
+            BuildPlayerOptions op = BuilderUtils.GetDefaultBuildPlayerOptions(EAppTarget.Client, EEnvironment.Staging);
             BuilderUtils.SetScriptingDefineSymbolsToActiveBuildTarget(op.extraScriptingDefines);
         }
 
@@ -22,7 +22,7 @@ namespace BonGames.EasyBuilder
 
         public static void SetEditorRunAsLocalServer()
         {
-            BuildPlayerOptions op = EasyBuilder.GetDefaultBuildPlayerOptions(EAppTarget.Server, EEnvironment.Staging);            
+            BuildPlayerOptions op = BuilderUtils.GetDefaultBuildPlayerOptions(EAppTarget.Server, EEnvironment.Staging);            
             List<string> defines = new List<string>(op.extraScriptingDefines);
             for (int i = defines.Count - 1; i >= 0; i--)
             {

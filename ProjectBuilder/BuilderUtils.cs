@@ -226,5 +226,63 @@ namespace BonGames.EasyBuilder
         {
             return System.IO.Path.Combine(UnityEngine.Application.dataPath, "../", "BuildCache");
         }
+
+        public static BuildPlayerOptions GetDefaultBuildPlayerOptions(EAppTarget appTarget, EEnvironment buildEnv)
+        {
+            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+
+            BuildOptions options = BuildOptions.None;
+            List<string> defines = null;
+            switch (buildEnv)
+            {
+                case EEnvironment.Development:
+                    {
+                        options = BuildOptions.Development;
+                        defines = new List<string>()
+                        {
+                            BuildDefines.EnableLog,
+                            BuildDefines.DevelopmentBuild,
+                            BuildDefines.InternalBuild,
+                        };
+                    }
+                    break;
+                case EEnvironment.Staging:
+                    {
+                        defines = new List<string>()
+                        {
+                            BuildDefines.EnableLog,
+                            BuildDefines.StagingBuild,
+                            BuildDefines.InternalBuild,
+                        };
+                    }
+                    break;
+                case EEnvironment.Release:
+                    {
+                        defines = new List<string>()
+                        {
+                            BuildDefines.ReleaseBuild,
+                        };
+                    }
+                    break;
+            }
+
+            string[] currentSymbols = BuilderUtils.GetActiveBuildTargetDefineSymbols();
+            List<string> internalDefineSymbols = BuilderUtils.GetAllScriptSymbols();
+
+            for (int i = 0; i < currentSymbols.Length; i++)
+            {
+                string symbol = currentSymbols[i];
+                // Ignore interal symbol as them will be added/re-added by internal logic
+                if (string.IsNullOrEmpty(symbol) || internalDefineSymbols.Contains(symbol)) continue;
+
+                // Keep the external ones such as DOTWEEN
+                defines.Add(symbol);
+            }
+
+            buildPlayerOptions.options = options;
+            buildPlayerOptions.extraScriptingDefines = defines.ToArray();
+            return buildPlayerOptions;
+        }
+
     }
 }

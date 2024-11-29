@@ -7,10 +7,11 @@ namespace BonGames.EasyBuilder
         public static class Key
         {
             // Build Arguments
-            public const string BuildAppTarget = "-buildAppTarget";
-            public const string BuildEnvironment = "-buildEnv";
+            public const string BuildAppTarget      = "-buildAppTarget";
+            public const string BuildEnvironment    = "-buildEnv";
             public const string BuildPlatformTarget = "-buildPlatformTarget";
             public const string BuildNumber         = "-buildNumber";
+            public const string Product             = "-product";
 
             // Android specified
             public const string KeystorePath        = "-ks";
@@ -47,5 +48,7 @@ namespace BonGames.EasyBuilder
             }
             return defValue;
         }
+
+        public static string GetProductName() => EnvironmentArguments.GetEnvironmentArgument(Key.Product);        
     }
 }

@@ -38,6 +38,7 @@ namespace BonGames.EasyBuilder
 
         public void Build()
         {
+            BonGames.Tools.EnvironmentArguments.Load();
             // Switch to build target
             BuildTargetGroup buildGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
             if (buildGroup != BuilderUtils.GetActiveBuildTargetGroup() ||  BuildTarget !=  BuilderUtils.GetActiveBuildTarget())
@@ -106,7 +107,27 @@ namespace BonGames.EasyBuilder
             PlayerSettings.WSA.packageVersion = new System.Version(Version.Major, Version.Minor, buildNumber, Version.Revision);
         }
 
-        protected virtual void SetProductName() { }
+        protected virtual void SetProductName() 
+        {
+            string product = BuildArguments.GetProductName();
+            if (!string.IsNullOrEmpty(product))
+            {
+                switch (Environment)
+                {
+                    case EEnvironment.Debug:                        
+                    case EEnvironment.Development:
+                        product = $"{product} (Dev)";
+                        break;
+                    case EEnvironment.Staging:
+                        product = $"{product} (Stag)";
+                        break;
+                    case EEnvironment.Release:                        
+                    case EEnvironment.Distribution:
+                        break;
+                }
+                PlayerSettings.productName = product;
+            }
+        }
 
         protected virtual void SignApp() { }
 
