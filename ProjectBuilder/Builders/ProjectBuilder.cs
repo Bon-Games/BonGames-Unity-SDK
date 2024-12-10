@@ -28,9 +28,9 @@ namespace BonGames.EasyBuilder
             BuildDefines.EnableIL2CppScriptBackend,
         };
 
-        protected BuildPlayerOptions BuildPlayerOptions { get; set; }
-
         protected BuildVersion Version { get; } = new BuildVersion();
+
+        public BuildPlayerOptions BuildPlayerOptions { get; set; }
 
         public ProjectBuilder(EAppTarget appTarget, BuildTarget buildTarget, EEnvironment environment)
         {
@@ -40,7 +40,7 @@ namespace BonGames.EasyBuilder
         }
         
 
-        public void Build()
+        public UnityEditor.Build.Reporting.BuildReport Build()
         {
             Prepare();
             BonGames.Tools.EnvironmentArguments.Load();
@@ -48,7 +48,9 @@ namespace BonGames.EasyBuilder
             BuildTargetGroup buildGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
             if (buildGroup != BuilderUtils.GetActiveBuildTargetGroup() ||  BuildTarget !=  BuilderUtils.GetActiveBuildTarget())
             {
-                EditorUserBuildSettings.SwitchActiveBuildTarget(buildGroup, BuildTarget);
+                BonGames.Tools.Domain.LogI($"Switching build target to BuildGroup:{buildGroup} BuildTarget:{BuildTarget}");
+                bool switchRes = EditorUserBuildSettings.SwitchActiveBuildTarget(buildGroup, BuildTarget);
+                BonGames.Tools.Domain.ThrowIf(!switchRes, $"SwitchingError: Switching build target to BuildGroup:{buildGroup} BuildTarget:{BuildTarget}");
             }
 
             // Create build options
@@ -72,20 +74,19 @@ namespace BonGames.EasyBuilder
             // Build
             UnityEditor.Build.Reporting.BuildReport report = BuildPipeline.BuildPlayer(BuildPlayerOptions);
 
-            // Post Build
-            if (PostBuildProcess != null)
-            {
-                PostBuildProcess.OnPostBuild(this);
-            }
-
             if (report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
             {
-                EditorUtility.RevealInFinder(BuildPlayerOptions.locationPathName);
+                // Post Build
+                if (PostBuildProcess != null)
+                {
+                    PostBuildProcess.OnPostBuild(this);
+                }
             }
             else
             {
-                UnityEngine.Debug.LogError($"Build failed with result {report.summary.result}");
+                BonGames.Tools.Domain.LogW("Skip Post Build Process due to build failed");
             }
+            return report;
         }
 
         protected virtual void Prepare()
@@ -109,14 +110,11 @@ namespace BonGames.EasyBuilder
 
         protected virtual void UpdateAppVersion()
         {
-            int buildNumber = BuildArguments.GetBuildNumber(-1);
-            buildNumber = buildNumber > 0 ? buildNumber : Version.Build;
-
             // Set all in once here, reduce complexity, if you want to set by your own logic, lets override this method
             PlayerSettings.bundleVersion = Version.BundleVersion;
-            PlayerSettings.Android.bundleVersionCode = buildNumber;
-            PlayerSettings.iOS.buildNumber = $"{buildNumber}";
-            PlayerSettings.WSA.packageVersion = new System.Version(Version.Major, Version.Minor, buildNumber, Version.Revision);
+            PlayerSettings.Android.bundleVersionCode = Version.Build;
+            PlayerSettings.iOS.buildNumber = $"{Version.Build}";
+            PlayerSettings.WSA.packageVersion = new System.Version(Version.Major, Version.Minor, Version.Build, Version.Revision);
         }
 
         protected virtual void SetProductName() 
@@ -139,15 +137,38 @@ namespace BonGames.EasyBuilder
                 }
                 PlayerSettings.productName = product;
             }
+
+            // Setting for bundle id
+            string bundleId = BuildArguments.GetBundleId();
+            // If the bundle id is passed as an argument
+            if (!string.IsNullOrEmpty(bundleId))
+            {
+                switch (Environment)
+                {
+                    case EEnvironment.Debug:
+                    case EEnvironment.Development:
+                        bundleId = $"{bundleId}.dev";
+                        break;
+                    case EEnvironment.Staging:
+                        bundleId = $"{bundleId}.stg";
+                        break;
+                    case EEnvironment.Release:
+                    case EEnvironment.Distribution:
+                        break;
+                }
+
+                BuildTargetGroup buildGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
+                PlayerSettings.SetApplicationIdentifier(buildGroup, bundleId);
+            }
         }
 
         protected virtual void SignApp() { }
 
         protected virtual BuildPlayerOptions CreateBuildPlayerOptions()
         {
-            string buildLocation = BuilderUtils.GetPlatformBuildFolder(BuildTarget, AppTarget);
+            string buildLocation = string.IsNullOrEmpty(BuildArguments.GetBuildDestination()) ? BuilderUtils.GetPlatformBuildFolder(BuildTarget, AppTarget) : BuildArguments.GetBuildDestination();            
             BuildPlayerOptions buildPlayerOptions = GetDefaultBuildPlayerOptions();
-            buildPlayerOptions.locationPathName = Path.Combine(buildLocation, BuilderUtils.GetDefaultProductName() + BuilderUtils.GetBuildTargetAppExtension(BuildTarget));
+            buildPlayerOptions.locationPathName = Path.Combine(buildLocation, BuildFileName());
             buildPlayerOptions.targetGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
             buildPlayerOptions.subtarget = BuilderUtils.GetSubBuildTarget(AppTarget, BuildTarget);
             buildPlayerOptions.scenes = GetActiveScenes();
@@ -159,6 +180,13 @@ namespace BonGames.EasyBuilder
         protected virtual void OnBuildPlayerOptionCreate(ref BuildPlayerOptions ops)
         {
 
+        }
+
+        private string BuildFileName()
+        {
+            string outputFileName = string.IsNullOrEmpty(BuildArguments.GetProductNameCode()) ? BuilderUtils.GetDefaultProductName() : BuildArguments.GetProductNameCode();
+            outputFileName = $"{outputFileName}-{Environment.Shorten()}-{Version.BundleVersion}({Version.Build}){BuilderUtils.GetBuildTargetAppExtension(BuildTarget, Environment)}";
+            return outputFileName;
         }
 
         public BuildPlayerOptions GetDefaultBuildPlayerOptions()
@@ -194,6 +222,7 @@ namespace BonGames.EasyBuilder
                     }
                     break;
                 case EEnvironment.Release:
+                case EEnvironment.Distribution:
                     {
                         defines = new List<string>()
                         {

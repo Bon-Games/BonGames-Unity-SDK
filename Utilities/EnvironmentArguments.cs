@@ -81,7 +81,7 @@ namespace BonGames.Tools
                 string arg = args[i].ToLower();
                 if (arg.StartsWith("-"))
                 {
-                    string value = i < args.Length - 1 ? args[i + 1].ToLower() : null;
+                    string value = i < args.Length - 1 ? args[i + 1] : null;
                     if (!string.IsNullOrEmpty(value))
                     {
                         value = value.StartsWith("-") ? null : value;
@@ -91,10 +91,15 @@ namespace BonGames.Tools
             }
 
             // Fill out default arguments if they do not exist
+            BonGames.Tools.Domain.LogW($"Attemp to load default arguments");
             Dictionary<string, string> defaultArgs = LoadDefaultArguments();
             foreach (KeyValuePair<string, string> it in defaultArgs)
             {
-                if (argDictionary.ContainsKey(it.Key)) continue;
+                if (argDictionary.ContainsKey(it.Key))
+                {
+                    BonGames.Tools.Domain.LogW($"Default arugment {it.Key} is ignore due to value is passed in Value:{it.Value}");
+                    continue;
+                }
 
                 argDictionary.Add(it.Key, it.Value);
             }
@@ -124,7 +129,7 @@ namespace BonGames.Tools
 
         private static string DefaultArgumentsFilePath()
         {
-            return System.IO.Path.Combine(UnityEngine.Application.dataPath, "../default.conf");
+            return System.IO.Path.Combine(UnityEngine.Application.dataPath, "../.args.default");
         }
 
         private static Dictionary<string, string> LoadDefaultArguments()
@@ -136,12 +141,16 @@ namespace BonGames.Tools
                 IEnumerator<string> lineItor = System.IO.File.ReadLines(filePath).GetEnumerator();
                 while (lineItor.MoveNext())
                 {
-                    string[] kvPair = lineItor.Current.Trim().Split(' ', System.StringSplitOptions.None);
+                    string[] kvPair = lineItor.Current.Trim().Split('=', System.StringSplitOptions.None);
 
                     if (kvPair.Length < 1 || string.IsNullOrEmpty(kvPair[0])) continue;
 
                     res[kvPair[0]] = kvPair.Length > 1 ? kvPair[1] : null;
                 }
+            }
+            else
+            {
+                BonGames.Tools.Domain.LogW($"Default args does not exist at {filePath}");
             }
             return res;
         }

@@ -19,5 +19,14 @@ namespace BonGames.Tools
             UnityEngine.Debug.LogError(message);
             System.Diagnostics.Debug.Fail(message);
         }
+
+        public static void ThrowIf(bool condition, string message)
+        {
+            if (condition)
+            {
+                LogE(message);
+                throw new System.Exception(message);
+            }
+        }
     }
 }

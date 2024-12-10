@@ -10,7 +10,7 @@ namespace BonGames.EasyBuilder
     {
         private const string Tag = "[" + nameof(BuilderUtils) +"]";
 
-        public static string GetBuildTargetAppExtension(BuildTarget target)
+        public static string GetBuildTargetAppExtension(BuildTarget target, EEnvironment env)
         {
             switch(target)
             {
@@ -18,7 +18,7 @@ namespace BonGames.EasyBuilder
                 case BuildTarget.StandaloneWindows64:
                     return ".exe";
                 case BuildTarget.Android:
-                    return ".apk";
+                    return env == EEnvironment.Distribution ? ".aab" : ".apk";
                 case BuildTarget.StandaloneOSX:
                     return ".app";
                 case BuildTarget.StandaloneLinux64:
@@ -117,7 +117,7 @@ namespace BonGames.EasyBuilder
 
         public static string GetRootBuiltFolder()
         {
-            string rootFolder = System.IO.Path.Combine(UnityEngine.Application.dataPath, "../../Build");
+            string rootFolder = System.IO.Path.Combine(UnityEngine.Application.dataPath, "../Build");
             return rootFolder;
         }
 
@@ -235,6 +235,7 @@ namespace BonGames.EasyBuilder
             List<string> defines = null;
             switch (buildEnv)
             {
+                case EEnvironment.Debug:
                 case EEnvironment.Development:
                     {
                         options = BuildOptions.Development;
@@ -257,6 +258,7 @@ namespace BonGames.EasyBuilder
                     }
                     break;
                 case EEnvironment.Release:
+                case EEnvironment.Distribution:
                     {
                         defines = new List<string>()
                         {
@@ -284,5 +286,17 @@ namespace BonGames.EasyBuilder
             return buildPlayerOptions;
         }
 
+        public static string Shorten(this EEnvironment env)
+        {
+            switch (env)
+            {
+                case EEnvironment.Debug:        return "debug";
+                case EEnvironment.Development:  return "dev";
+                case EEnvironment.Staging:      return "stg";
+                case EEnvironment.Release:      return "release";
+                case EEnvironment.Distribution: return "dist";
+                default:                        return "undefined";
+            }
+        }
     }
 }

@@ -29,11 +29,16 @@ namespace BonGames.EasyBuilder
         protected override void SignApp()
         {
             base.SignApp();
-            PlayerSettings.Android.useCustomKeystore = true;
-            PlayerSettings.Android.keystoreName = System.IO.Path.Combine(BuildInformationDirectory, "And", "bon-games-ks.keystore"); 
-            PlayerSettings.Android.keystorePass = "BonGames@123";
-            PlayerSettings.Android.keyaliasName = Environment == EEnvironment.Release ? "bon-games-release" : "bon-games-dev";
-            PlayerSettings.Android.keyaliasPass = "BonGames@123";
+            string ksPath = BuildArguments.Android.GetKeystorePath();
+            bool useCustomKey = !string.IsNullOrEmpty(ksPath);
+            if (useCustomKey)
+            {
+                PlayerSettings.Android.useCustomKeystore = useCustomKey;
+                PlayerSettings.Android.keystoreName = ksPath; 
+                PlayerSettings.Android.keystorePass = BuildArguments.Android.GetKeystorePassword();
+                PlayerSettings.Android.keyaliasName = BuildArguments.Android.GetAlias();
+                PlayerSettings.Android.keyaliasPass = BuildArguments.Android.GetAliasPassword();
+            }            
         }
 
         private AndroidBuildType GetBuildType()

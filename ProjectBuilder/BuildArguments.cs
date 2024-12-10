@@ -6,12 +6,17 @@ namespace BonGames.EasyBuilder
     {
         public static class Key
         {
+            // Common
+            public const string BuildDestination    = "-buildDestination"; // Build folder            
+
             // Build Arguments
             public const string BuildAppTarget      = "-buildAppTarget";
             public const string BuildEnvironment    = "-buildEnv";
             public const string BuildPlatformTarget = "-buildPlatformTarget";
             public const string BuildNumber         = "-buildNumber";
             public const string Product             = "-product";
+            public const string BundleId            = "-bundleId";
+            public const string ProductCode         = "-productCode";
 
             // Android specified
             public const string KeystorePath        = "-ks";
@@ -20,14 +25,22 @@ namespace BonGames.EasyBuilder
             public const string AliasPassword       = "-aliasPassword";
 
             // iOS specified
-            public const string ProvisioningId    = "-iOSProvisioning";
+            public const string ProvisioningId      = "-iOSProvisioning";
             public const string DevelopmentTeamId   = "-iOSTeamId";
 
         }
 
         public static class Android
         {
-            public static string GetKeystorePath() => EnvironmentArguments.GetEnvironmentArgument(Key.KeystorePath);
+            public static string GetKeystorePath()
+            {
+                string relativePath = EnvironmentArguments.GetEnvironmentArgument(Key.KeystorePath);
+                if (!string.IsNullOrEmpty(relativePath))
+                {
+                    return System.IO.Path.Combine(UnityEngine.Application.dataPath, relativePath);
+                }
+                return null;
+            }
             public static string GetKeystorePassword() => EnvironmentArguments.GetEnvironmentArgument(Key.KeystorePassword);
             public static string GetAlias() => EnvironmentArguments.GetEnvironmentArgument(Key.Alias);
             public static string GetAliasPassword() => EnvironmentArguments.GetEnvironmentArgument(Key.AliasPassword);
@@ -49,6 +62,9 @@ namespace BonGames.EasyBuilder
             return defValue;
         }
 
-        public static string GetProductName() => EnvironmentArguments.GetEnvironmentArgument(Key.Product);        
+        public static string GetProductName() => EnvironmentArguments.GetEnvironmentArgument(Key.Product);      
+        public static string GetProductNameCode() => EnvironmentArguments.GetEnvironmentArgument(Key.ProductCode);
+        public static string GetBundleId() => EnvironmentArguments.GetEnvironmentArgument(Key.BundleId);
+        public static string GetBuildDestination() => EnvironmentArguments.GetEnvironmentArgument(Key.BuildDestination);
     }
 }

@@ -27,6 +27,7 @@ namespace BonGames.EasyBuilder
             PlayerSettings.iOS.iOSManualProvisioningProfileID = BuildArguments.IOS.GetProvisioningId();
             PlayerSettings.iOS.appleEnableAutomaticSigning = string.IsNullOrEmpty(PlayerSettings.iOS.iOSManualProvisioningProfileID);
             PlayerSettings.iOS.appleDeveloperTeamID = BuildArguments.IOS.GetTeamId();
+            PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType.Automatic;
         }
     }
 }

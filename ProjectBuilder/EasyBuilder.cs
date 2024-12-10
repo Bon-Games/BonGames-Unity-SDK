@@ -72,6 +72,7 @@ namespace BonGames.EasyBuilder
 
         public static void Build()
         {
+            bool isSuccess = false;
             try
             {
                 if (!Application.isBatchMode) throw new System.Exception("This method only supports batmode for now");
@@ -87,16 +88,15 @@ namespace BonGames.EasyBuilder
                 if (!System.Enum.TryParse<BuildTarget>(EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildPlatformTarget), true, out BuildTarget buildTarget))
                     throw new System.Exception($"Build Platform Target is invalid with value {EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildPlatformTarget)}");
 
-                // ProjectBuilder.CreateBuilder(appTarget, buildTarget, env).Build();
+                isSuccess = ProjectBuilder.CreateBuilder(appTarget, buildTarget, env).Build().summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded;
             }
             catch (System.Exception e)
             {
                 Debug.LogError($"Build Failed with Exception\n{e}");
+                EditorApplication.Exit(1);
             }
-            finally
-            {
-                EditorApplication.Exit(0);
-            }
+            
+            EditorApplication.Exit(isSuccess ? 0 : 1);
         }
     }
 }

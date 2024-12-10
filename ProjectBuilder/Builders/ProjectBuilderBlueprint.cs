@@ -15,7 +15,7 @@ namespace BonGames.EasyBuilder
         public BuildTarget BuildTarget { get; }
         public EEnvironment Environment { get; }
 
-        public void Build();
+        public UnityEditor.Build.Reporting.BuildReport Build();
     }
 
     public interface IPreBuildProcess
