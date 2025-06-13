@@ -133,6 +133,7 @@ namespace BonGames.EasyBuilder
                         break;
                     case EEnvironment.Release:                        
                     case EEnvironment.Distribution:
+                        product = $"{product}";
                         break;
                 }
                 PlayerSettings.productName = product;
@@ -208,6 +209,7 @@ namespace BonGames.EasyBuilder
                             BuildDefines.EnableLog,
                             BuildDefines.DevelopmentBuild,
                             BuildDefines.InternalBuild,
+                            BuildDefines.DebugLog,
                         };
                     }
                     break;
@@ -218,12 +220,14 @@ namespace BonGames.EasyBuilder
                             BuildDefines.EnableLog,
                             BuildDefines.StagingBuild,
                             BuildDefines.InternalBuild,
+                            BuildDefines.DebugLog,
                         };
                     }
                     break;
                 case EEnvironment.Release:
                 case EEnvironment.Distribution:
                     {
+                        options |= BuildOptions.CleanBuildCache;
                         defines = new List<string>()
                         {
                             BuildDefines.ReleaseBuild,

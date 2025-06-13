@@ -39,6 +39,7 @@ namespace BonGames.EasyBuilder
                 {
                     return System.IO.Path.Combine(UnityEngine.Application.dataPath, relativePath);
                 }
+                Domain.LogW($"Keystore does't exist at relativePath {relativePath}");
                 return null;
             }
             public static string GetKeystorePassword() => EnvironmentArguments.GetEnvironmentArgument(Key.KeystorePassword);

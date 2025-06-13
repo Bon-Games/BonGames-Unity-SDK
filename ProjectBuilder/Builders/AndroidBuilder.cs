@@ -1,3 +1,4 @@
+using BonGames.Tools;
 using UnityEditor;
 
 namespace BonGames.EasyBuilder
@@ -22,8 +23,11 @@ namespace BonGames.EasyBuilder
             EditorUserBuildSettings.androidBuildType = GetBuildType();
             EditorUserBuildSettings.androidCreateSymbols = isReleaseBuild ? AndroidCreateSymbols.Public : AndroidCreateSymbols.Disabled;
             /// -- EditorUserBuildSettings
-            
 
+            /// PlayerSettings
+            /// TODO: Option for this
+            /// PlayerSettings.Android.useAPKExpansionFiles = Environment is EEnvironment.Distribution;
+            /// -- PlayerSettings
         }
 
         protected override void SignApp()
@@ -31,6 +35,7 @@ namespace BonGames.EasyBuilder
             base.SignApp();
             string ksPath = BuildArguments.Android.GetKeystorePath();
             bool useCustomKey = !string.IsNullOrEmpty(ksPath);
+            Domain.LogI($"Sign App useCustomKey {useCustomKey} ksPath {ksPath}");
             if (useCustomKey)
             {
                 PlayerSettings.Android.useCustomKeystore = useCustomKey;
@@ -39,6 +44,10 @@ namespace BonGames.EasyBuilder
                 PlayerSettings.Android.keyaliasName = BuildArguments.Android.GetAlias();
                 PlayerSettings.Android.keyaliasPass = BuildArguments.Android.GetAliasPassword();
             }            
+            else
+            {
+                PlayerSettings.Android.useCustomKeystore = false;
+            }
         }
 
         private AndroidBuildType GetBuildType()

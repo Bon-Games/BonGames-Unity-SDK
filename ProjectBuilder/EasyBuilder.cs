@@ -33,6 +33,11 @@ namespace BonGames.EasyBuilder
         public static void LogW(string message) => BonGames.Tools.Domain.LogW(message);
         public static void LogE(string message) => BonGames.Tools.Domain.LogE(message);
 
+        [MenuItem(MenuRunTools + "/Build/Android/Distribution")]
+        public static void BuildAndroidDistribution()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.Android, EEnvironment.Distribution).Build();
+        }
 
         [MenuItem(MenuRunTools + "/Build/Android/Release")]
         public static void BuildAndroidRelease()
@@ -55,19 +60,19 @@ namespace BonGames.EasyBuilder
         [MenuItem(MenuRunTools + "/Build/iOS/Release")]
         public static void BuildIOSRelease()
         {
-            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.Android, EEnvironment.Release).Build();
+            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.iOS, EEnvironment.Release).Build();
         }
 
         [MenuItem(MenuRunTools + "/Build/iOS/Staging")]
         public static void BuildIOSStaging()
         {
-            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.Android, EEnvironment.Staging).Build();
+            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.iOS, EEnvironment.Staging).Build();
         }
 
         [MenuItem(MenuRunTools + "/Build/iOS/Development")]
         public static void BuildIOSDevelopment()
         {
-            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.Android, EEnvironment.Development).Build();
+            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.iOS, EEnvironment.Development).Build();
         }
 
         public static void Build()

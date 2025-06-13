@@ -10,6 +10,10 @@ namespace BonGames.EasyBuilder
         /// </summary>
         public const string EnableLog = "ENABLE_LOG";
         /// <summary>
+        /// To toggle Mobile Console Kit (https://github.com/pixeption/MobileConsoleKit)
+        /// </summary>
+        public const string DebugLog = "DebugLog";
+        /// <summary>
         /// Unity editor flag
         /// </summary>
         public const string UnityEditor = "UNITY_EDITOR";

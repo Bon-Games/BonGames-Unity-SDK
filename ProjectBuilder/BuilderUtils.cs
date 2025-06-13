@@ -244,6 +244,7 @@ namespace BonGames.EasyBuilder
                             BuildDefines.EnableLog,
                             BuildDefines.DevelopmentBuild,
                             BuildDefines.InternalBuild,
+                            BuildDefines.DebugLog,
                         };
                     }
                     break;
@@ -254,6 +255,7 @@ namespace BonGames.EasyBuilder
                             BuildDefines.EnableLog,
                             BuildDefines.StagingBuild,
                             BuildDefines.InternalBuild,
+                            BuildDefines.DebugLog,
                         };
                     }
                     break;
