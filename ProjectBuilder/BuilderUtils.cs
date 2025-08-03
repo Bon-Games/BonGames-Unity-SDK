@@ -300,5 +300,21 @@ namespace BonGames.EasyBuilder
                 default:                        return "undefined";
             }
         }
+
+        public static string ShortenSimplified(this EEnvironment env)
+        {
+            switch (env)
+            {
+                case EEnvironment.Debug:
+                case EEnvironment.Development: 
+                    return "dev";
+                case EEnvironment.Staging: 
+                    return "stg";
+                case EEnvironment.Release:
+                case EEnvironment.Distribution: 
+                    return "release";
+                default: return "undefined";
+            }
+        }
     }
 }

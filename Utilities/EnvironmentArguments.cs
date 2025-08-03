@@ -95,13 +95,14 @@ namespace BonGames.Tools
             Dictionary<string, string> defaultArgs = LoadDefaultArguments();
             foreach (KeyValuePair<string, string> it in defaultArgs)
             {
-                if (argDictionary.ContainsKey(it.Key))
+                string key = it.Key.ToLower();
+                if (argDictionary.ContainsKey(key))
                 {
-                    BonGames.Tools.Domain.LogW($"Default arugment {it.Key} is ignore due to value is passed in Value:{it.Value}");
+                    BonGames.Tools.Domain.LogW($"Default arugment {key} is ignore due to value is passed in Value:{it.Value}");
                     continue;
                 }
 
-                argDictionary.Add(it.Key, it.Value);
+                argDictionary.Add(key, it.Value);
             }
 
             return argDictionary;

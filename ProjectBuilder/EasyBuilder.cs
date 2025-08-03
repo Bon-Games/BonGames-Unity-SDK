@@ -3,7 +3,11 @@ namespace BonGames.EasyBuilder
     using UnityEditor;
     using UnityEngine;
     using BonGames.Tools;
-
+    using System.Text;
+#if UNITY_ADDRESSABLE
+    using UnityEditor.AddressableAssets;
+    using UnityEditor.AddressableAssets.Settings;
+#endif
     public enum EEnvironment
     {
         Debug,
@@ -75,6 +79,21 @@ namespace BonGames.EasyBuilder
             ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.iOS, EEnvironment.Development).Build();
         }
 
+#if UNITY_ADDRESSABLE
+        [MenuItem(MenuRunTools + "/Dlc/Build")]
+        public static void AddressableBuild()
+        {
+            AddressableAssetSettings.BuildPlayerContent();            
+        }
+
+        public static void TestAddressable()
+        {
+            string buildProfileId = AddressableAssetSettingsDefaultObject.Settings.profileSettings.GetProfileId("Remote");
+            AddressableAssetSettingsDefaultObject.Settings.profileSettings.SetValue(buildProfileId, "Remote.BuildPath", "abc");
+            EditorUtility.SetDirty(AddressableAssetSettingsDefaultObject.Settings);
+        }
+#endif
+
         public static void Build()
         {
             bool isSuccess = false;
@@ -93,7 +112,32 @@ namespace BonGames.EasyBuilder
                 if (!System.Enum.TryParse<BuildTarget>(EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildPlatformTarget), true, out BuildTarget buildTarget))
                     throw new System.Exception($"Build Platform Target is invalid with value {EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildPlatformTarget)}");
 
-                isSuccess = ProjectBuilder.CreateBuilder(appTarget, buildTarget, env).Build().summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded;
+                // If report is Null, then Player Build was intended to be ignored
+                // So ONLY error could be arised in that case is Dlc building process which would throw an exception if an error occurs, then the catch block would be invoke
+                UnityEditor.Build.Reporting.BuildReport report = ProjectBuilder.CreateBuilder(appTarget, buildTarget, env).Build();
+                isSuccess = !BuildArguments.IsPlayerBuildEnable() || report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded;
+                if (isSuccess)
+                {
+                    Domain.LogI("Build process completed without error");
+                }
+                else
+                {
+                    StringBuilder stepMessageLogger = new();
+                    if (report.steps != null && report.steps.Length > 0)
+                    {
+                        stepMessageLogger.AppendLine("Build Steps:");
+                        for (int i = 0; i < report.steps.Length; i++)
+                        {
+                            stepMessageLogger.AppendLine(report.steps[i].name);
+                            stepMessageLogger.AppendLine(string.Join("\n", report.steps[i].messages));
+                        }
+                    }
+                    else
+                    {
+                        stepMessageLogger.AppendLine("No step was executed ??");
+                    }
+                    throw new System.Exception($"Build Failed totalErrors: {report.summary.totalErrors}\n{stepMessageLogger.ToString()}");
+                }
             }
             catch (System.Exception e)
             {

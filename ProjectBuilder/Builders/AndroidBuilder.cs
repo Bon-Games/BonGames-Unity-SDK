@@ -23,11 +23,8 @@ namespace BonGames.EasyBuilder
             EditorUserBuildSettings.androidBuildType = GetBuildType();
             EditorUserBuildSettings.androidCreateSymbols = isReleaseBuild ? AndroidCreateSymbols.Public : AndroidCreateSymbols.Disabled;
             /// -- EditorUserBuildSettings
+            
 
-            /// PlayerSettings
-            /// TODO: Option for this
-            /// PlayerSettings.Android.useAPKExpansionFiles = Environment is EEnvironment.Distribution;
-            /// -- PlayerSettings
         }
 
         protected override void SignApp()
@@ -35,7 +32,6 @@ namespace BonGames.EasyBuilder
             base.SignApp();
             string ksPath = BuildArguments.Android.GetKeystorePath();
             bool useCustomKey = !string.IsNullOrEmpty(ksPath);
-            Domain.LogI($"Sign App useCustomKey {useCustomKey} ksPath {ksPath}");
             if (useCustomKey)
             {
                 PlayerSettings.Android.useCustomKeystore = useCustomKey;
@@ -43,9 +39,17 @@ namespace BonGames.EasyBuilder
                 PlayerSettings.Android.keystorePass = BuildArguments.Android.GetKeystorePassword();
                 PlayerSettings.Android.keyaliasName = BuildArguments.Android.GetAlias();
                 PlayerSettings.Android.keyaliasPass = BuildArguments.Android.GetAliasPassword();
-            }            
+            }
             else
             {
+                if (Environment == EEnvironment.Release || Environment == EEnvironment.Distribution)
+                {
+                    Domain.ThrowIf(!PlayerSettings.Android.useCustomKeystore,                   "Production environment must set keystore");
+                    Domain.ThrowIf(string.IsNullOrEmpty(PlayerSettings.Android.keystoreName),   "Production environment must set keystore");
+                    Domain.ThrowIf(string.IsNullOrEmpty(PlayerSettings.Android.keystorePass),   "Production environment must set keystore");
+                    Domain.ThrowIf(string.IsNullOrEmpty(PlayerSettings.Android.keyaliasName),   "Production environment must set keystore");
+                    Domain.ThrowIf(string.IsNullOrEmpty(PlayerSettings.Android.keyaliasPass),   "Production environment must set keystore");
+                }
                 PlayerSettings.Android.useCustomKeystore = false;
             }
         }

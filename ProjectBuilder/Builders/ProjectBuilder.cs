@@ -1,7 +1,14 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Build;
+
+#if UNITY_ADDRESSABLE
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Build;
+using UnityEditor.AddressableAssets.Settings;
+#endif
 
 namespace BonGames.EasyBuilder
 {
@@ -71,22 +78,64 @@ namespace BonGames.EasyBuilder
             // Clean up current symbols, use buildPlayerOptions.extraScriptingDefines for testing or does not really create an impact            
             BuilderUtils.SetScriptingDefineSymbolsToActiveBuildTarget(BuildPlayerOptions.extraScriptingDefines);
 
-            // Build
-            UnityEditor.Build.Reporting.BuildReport report = BuildPipeline.BuildPlayer(BuildPlayerOptions);
-
-            if (report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
+            // Build DLC
+            // TODO: This could be sepeated from build player
+#if UNITY_ADDRESSABLE
+            if (BuildArguments.IsDlcBuildEnable())
             {
-                // Post Build
-                if (PostBuildProcess != null)
+                string dlcDestination = BuildArguments.GetDlcDestination();
+                string profileName = BuildArguments.GetDlcProfileName("Remote") ?? string.Empty;
+                // The build argument is lower case, so have to search for it
+                List<string> profileNames = AddressableAssetSettingsDefaultObject.Settings.profileSettings.GetAllProfileNames();
+                profileName = profileNames.Contains(profileName) ? profileName : profileNames.FirstOrDefault(p => profileName.ToLower().Equals(p.ToLower()));
+                string buildProfileId = AddressableAssetSettingsDefaultObject.Settings.profileSettings.GetProfileId(profileName);
+
+                BonGames.Tools.Domain.ThrowIf(string.IsNullOrEmpty(buildProfileId), $"Dlc profile name couldn't be found: {profileName}");
+                AddressableAssetSettingsDefaultObject.Settings.activeProfileId = buildProfileId;
+                BonGames.Tools.Domain.LogI($"Set Dlc active profile to {profileName}:{buildProfileId}");
+                if (!string.IsNullOrEmpty(dlcDestination))
                 {
-                    PostBuildProcess.OnPostBuild(this);
+                    dlcDestination = $"{dlcDestination}/[Environment]/[UnityEditor.PlayerSettings.bundleVersion]/[BuildTarget]";
+                    BonGames.Tools.Domain.LogI($"Set Dlc build destination to {dlcDestination}");
+
+                    AddressableAssetSettingsDefaultObject.Settings.profileSettings.SetValue(buildProfileId, "Remote.BuildPath", dlcDestination);
+                    AddressableAssetSettingsDefaultObject.Settings.profileSettings.SetValue(buildProfileId, "Environment", this.Environment.ShortenSimplified());
+                    EditorUtility.SetDirty(AddressableAssetSettingsDefaultObject.Settings);
+                    AssetDatabase.SaveAssets();
                 }
+                BonGames.Tools.Domain.LogI($"Start building dlc with ProfileId:{buildProfileId}");
+                foreach (string varName in AddressableAssetSettingsDefaultObject.Settings.profileSettings.GetVariableNames()) 
+                {
+                    BonGames.Tools.Domain.LogI($"with {varName}={AddressableAssetSettingsDefaultObject.Settings.profileSettings.GetValueByName(buildProfileId, varName)}");
+                }
+                AddressableAssetSettings.BuildPlayerContent(out AddressablesPlayerBuildResult rst);
+                BonGames.Tools.Domain.ThrowIf(!string.IsNullOrEmpty(rst.Error), $"Dlc build failed:\n{rst.Error}");
+            }
+#endif
+
+            // Player Build
+            if (BuildArguments.IsPlayerBuildEnable())
+            {
+                UnityEditor.Build.Reporting.BuildReport report = BuildPipeline.BuildPlayer(BuildPlayerOptions);
+
+                if (report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
+                {
+                    // Post Build
+                    if (PostBuildProcess != null)
+                    {
+                        PostBuildProcess.OnPostBuild(this);
+                    }
+                }
+                else
+                {
+                    BonGames.Tools.Domain.LogW("Skip Post Build Process due to build failed");
+                }
+                return report;
             }
             else
             {
-                BonGames.Tools.Domain.LogW("Skip Post Build Process due to build failed");
+                return default;
             }
-            return report;
         }
 
         protected virtual void Prepare()
@@ -122,20 +171,6 @@ namespace BonGames.EasyBuilder
             string product = BuildArguments.GetProductName();
             if (!string.IsNullOrEmpty(product))
             {
-                switch (Environment)
-                {
-                    case EEnvironment.Debug:                        
-                    case EEnvironment.Development:
-                        product = $"{product} (Dev)";
-                        break;
-                    case EEnvironment.Staging:
-                        product = $"{product} (Stag)";
-                        break;
-                    case EEnvironment.Release:                        
-                    case EEnvironment.Distribution:
-                        product = $"{product}";
-                        break;
-                }
                 PlayerSettings.productName = product;
             }
 
@@ -144,22 +179,9 @@ namespace BonGames.EasyBuilder
             // If the bundle id is passed as an argument
             if (!string.IsNullOrEmpty(bundleId))
             {
-                switch (Environment)
-                {
-                    case EEnvironment.Debug:
-                    case EEnvironment.Development:
-                        bundleId = $"{bundleId}.dev";
-                        break;
-                    case EEnvironment.Staging:
-                        bundleId = $"{bundleId}.stg";
-                        break;
-                    case EEnvironment.Release:
-                    case EEnvironment.Distribution:
-                        break;
-                }
-
                 BuildTargetGroup buildGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
                 PlayerSettings.SetApplicationIdentifier(buildGroup, bundleId);
+                EasyBuilder.LogE($"Set BundleId: {bundleId} for BuildTarget: {BuildTarget} BuildGroup: {buildGroup}");
             }
         }
 
