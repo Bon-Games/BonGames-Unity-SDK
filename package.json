@@ -1,0 +1,17 @@
+{
+	"name": "com.bon-games.jenkins-pipeline",
+	"version": "0.0.1",
+	"displayName": "Jenkins Pipline",
+	"description": "Unity Jenkins Pipeline",
+	"unity": "2018.3",
+    "dependencies": {},
+	"keywords": [
+        "Jenkins",
+        "Pipeline",
+        "CI/CD"],
+	"author": {
+		"name": "Bon Games",
+		"email": "reigh.nguyen@gmail.com",
+        "url": "https://github.com/Bon-Games"
+	}
+}
