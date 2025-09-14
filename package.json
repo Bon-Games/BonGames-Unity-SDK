@@ -1,14 +1,15 @@
 {
-	"name": "com.bon-games.jenkins-pipeline",
+	"name": "com.bon-games.easy-builder",
 	"version": "0.0.1",
-	"displayName": "Jenkins Pipline",
-	"description": "Unity Jenkins Pipeline",
+	"displayName": "Easy Builder",
+	"description": "Unity Project Builder which supports batch mode to integrate CIDI.",
 	"unity": "2018.3",
     "dependencies": {},
 	"keywords": [
         "Jenkins",
         "Pipeline",
-        "CI/CD"],
+        "CI/CD",
+		"Builder"],
 	"author": {
 		"name": "Bon Games",
 		"email": "reigh.nguyen@gmail.com",
