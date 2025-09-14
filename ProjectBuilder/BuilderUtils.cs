@@ -18,7 +18,7 @@ namespace BonGames.EasyBuilder
                 case BuildTarget.StandaloneWindows64:
                     return ".exe";
                 case BuildTarget.Android:
-                    return env == EEnvironment.Distribution ? ".aab" : ".apk";
+                    return (env == EEnvironment.Distribution || BuildArguments.Android.IsBuildAAB()) ? ".aab" : ".apk";
                 case BuildTarget.StandaloneOSX:
                     return ".app";
                 case BuildTarget.StandaloneLinux64:

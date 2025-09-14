@@ -25,6 +25,7 @@ namespace BonGames.EasyBuilder
             public const string KeystorePassword    = "-ksPassword";
             public const string Alias               = "-alias";
             public const string AliasPassword       = "-aliasPassword";
+            public const string BuildAAB            = "-buildAAB";
 
             // iOS specified
             public const string ProvisioningId      = "-iOSProvisioning";
@@ -44,13 +45,14 @@ namespace BonGames.EasyBuilder
                 string relativePath = EnvironmentArguments.GetEnvironmentArgument(Key.KeystorePath);
                 if (!string.IsNullOrEmpty(relativePath))
                 {
-                    return System.IO.Path.Combine(UnityEngine.Application.dataPath, relativePath);
+                    return System.IO.Path.Combine(UnityEngine.Application.dataPath, "..", relativePath);
                 }
                 return null;
             }
             public static string GetKeystorePassword() => EnvironmentArguments.GetEnvironmentArgument(Key.KeystorePassword);
             public static string GetAlias() => EnvironmentArguments.GetEnvironmentArgument(Key.Alias);
             public static string GetAliasPassword() => EnvironmentArguments.GetEnvironmentArgument(Key.AliasPassword);
+            public static bool IsBuildAAB() => EnvironmentArguments.GetEnvironmentArgument(Key.BuildAAB) == "true";
         }
 
         public static class IOS

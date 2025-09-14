@@ -19,9 +19,9 @@ namespace BonGames.EasyBuilder
             EditorUserBuildSettings.connectProfiler = Environment == EEnvironment.Debug;
             EditorUserBuildSettings.buildWithDeepProfilingSupport = Environment == EEnvironment.Debug;
             EditorUserBuildSettings.allowDebugging = Environment == EEnvironment.Debug;
-            EditorUserBuildSettings.buildAppBundle = Environment == EEnvironment.Distribution;
+            EditorUserBuildSettings.buildAppBundle = Environment == EEnvironment.Distribution || BuildArguments.Android.IsBuildAAB();
             EditorUserBuildSettings.androidBuildType = GetBuildType();
-            EditorUserBuildSettings.androidCreateSymbols = isReleaseBuild ? AndroidCreateSymbols.Public : AndroidCreateSymbols.Disabled;
+            EditorUserBuildSettings.androidCreateSymbols = (isReleaseBuild || BuildArguments.Android.IsBuildAAB()) ? AndroidCreateSymbols.Public : AndroidCreateSymbols.Disabled;
             /// -- EditorUserBuildSettings
             
 
