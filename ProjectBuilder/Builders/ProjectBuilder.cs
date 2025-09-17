@@ -1,3 +1,4 @@
+using BonGames.Tools;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,7 +13,7 @@ using UnityEditor.AddressableAssets.Settings;
 
 namespace BonGames.EasyBuilder
 {
-    public abstract partial class ProjectBuilder : IProjectBuilder 
+    public abstract partial class ProjectBuilder : IProjectBuilder
     {
         public virtual IPreProcessBuildWithReportPreset PreProcessBuildWithReport { get; protected set; }
 
@@ -45,7 +46,7 @@ namespace BonGames.EasyBuilder
             BuildTarget = buildTarget;
             Environment = environment;
         }
-        
+
 
         public UnityEditor.Build.Reporting.BuildReport Build()
         {
@@ -53,7 +54,7 @@ namespace BonGames.EasyBuilder
             BonGames.Tools.EnvironmentArguments.Load();
             // Switch to build target
             BuildTargetGroup buildGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
-            if (buildGroup != BuilderUtils.GetActiveBuildTargetGroup() ||  BuildTarget !=  BuilderUtils.GetActiveBuildTarget())
+            if (buildGroup != BuilderUtils.GetActiveBuildTargetGroup() || BuildTarget != BuilderUtils.GetActiveBuildTarget())
             {
                 BonGames.Tools.Domain.LogI($"Switching build target to BuildGroup:{buildGroup} BuildTarget:{BuildTarget}");
                 bool switchRes = EditorUserBuildSettings.SwitchActiveBuildTarget(buildGroup, BuildTarget);
@@ -154,7 +155,7 @@ namespace BonGames.EasyBuilder
 
         protected virtual void SetupInternally()
         {
-            
+
         }
 
         protected virtual void UpdateAppVersion()
@@ -166,21 +167,21 @@ namespace BonGames.EasyBuilder
             PlayerSettings.WSA.packageVersion = new System.Version(Version.Major, Version.Minor, Version.Build, Version.Revision);
         }
 
-        protected virtual void SetProductName() 
+        protected virtual void SetProductName()
         {
             string product = BuildArguments.GetProductName();
             if (!string.IsNullOrEmpty(product))
             {
                 switch (Environment)
                 {
-                    case EEnvironment.Debug:                        
+                    case EEnvironment.Debug:
                     case EEnvironment.Development:
                         product = $"{product} (Dev)";
                         break;
                     case EEnvironment.Staging:
                         product = $"{product} (Stag)";
                         break;
-                    case EEnvironment.Release:                        
+                    case EEnvironment.Release:
                     case EEnvironment.Distribution:
                         break;
                 }
@@ -202,7 +203,7 @@ namespace BonGames.EasyBuilder
 
         protected virtual BuildPlayerOptions CreateBuildPlayerOptions()
         {
-            string buildLocation = string.IsNullOrEmpty(BuildArguments.GetBuildDestination()) ? BuilderUtils.GetPlatformBuildFolder(BuildTarget, AppTarget) : BuildArguments.GetBuildDestination();            
+            string buildLocation = string.IsNullOrEmpty(BuildArguments.GetBuildDestination()) ? BuilderUtils.GetPlatformBuildFolder(BuildTarget, AppTarget) : BuildArguments.GetBuildDestination();
             BuildPlayerOptions buildPlayerOptions = GetDefaultBuildPlayerOptions();
             buildPlayerOptions.locationPathName = Path.Combine(buildLocation, BuildFileName());
             buildPlayerOptions.targetGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
@@ -210,6 +211,8 @@ namespace BonGames.EasyBuilder
             buildPlayerOptions.scenes = GetActiveScenes();
             buildPlayerOptions.target = BuildTarget;
             OnBuildPlayerOptionCreate(ref buildPlayerOptions);
+
+            Domain.ThrowIf(!buildPlayerOptions.scenes.Any(), "There's no scene inlcuded in the build, ensure you have at least 1 scene in either ProjectSettings or passed argument");
             return buildPlayerOptions;
         }
 
@@ -292,6 +295,8 @@ namespace BonGames.EasyBuilder
                 defines.AddRange(PlatformSpecifiedSymbols);
             }
 
+            defines.AddRange(BuildArguments.GetAdditionalSymbols());            
+
             buildPlayerOptions.options = options;
             buildPlayerOptions.extraScriptingDefines = defines.ToArray();
             return buildPlayerOptions;
@@ -299,14 +304,23 @@ namespace BonGames.EasyBuilder
 
         protected virtual string[] GetActiveScenes()
         {
-            EditorBuildSettingsScene[] scenes = EditorBuildSettings.scenes;
+            string[] allScenes = AssetDatabase.FindAssets("t:scene");
             List<string> activeScenes = new List<string>();
-            for (int i = 0; i < scenes.Length; i++)
+            string[] customScenePaths = BuildArguments.GetScenePaths();
+            if (customScenePaths.Length > 0)
             {
-                EditorBuildSettingsScene sceneSettings = scenes[i];
-                if (sceneSettings.enabled)
+                activeScenes.AddRange(customScenePaths.Where(path => allScenes.Contains(path)));
+            }
+            else
+            {
+                EditorBuildSettingsScene[] scenes = EditorBuildSettings.scenes;
+                for (int i = 0; i < scenes.Length; i++)
                 {
-                    activeScenes.Add(sceneSettings.path);
+                    EditorBuildSettingsScene sceneSettings = scenes[i];
+                    if (sceneSettings.enabled)
+                    {
+                        activeScenes.Add(sceneSettings.path);
+                    }
                 }
             }
             return activeScenes.ToArray();
@@ -317,7 +331,7 @@ namespace BonGames.EasyBuilder
     {
         public List<IPreProcessBuildWithReportTask> Tasks { get; private set; } = new();
     }
-    
+
     internal class DefaultPostProcessBuildWithReportPreset : IPostProcessBuildWithReportPreset
     {
         public List<IPostProcessBuildWithReportTask> Tasks { get; private set; } = new();

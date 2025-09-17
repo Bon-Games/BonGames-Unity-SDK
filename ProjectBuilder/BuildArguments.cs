@@ -1,4 +1,5 @@
 using BonGames.Tools;
+using System;
 
 namespace BonGames.EasyBuilder
 {
@@ -19,6 +20,8 @@ namespace BonGames.EasyBuilder
             public const string Product             = "-product";
             public const string BundleId            = "-bundleId";
             public const string ProductCode         = "-productCode";
+            public const string ScenePaths          = "-scenes";
+            public const string AdditionalSymbols   = "-symbols";
 
             // Android specified
             public const string KeystorePath        = "-ks";
@@ -83,5 +86,21 @@ namespace BonGames.EasyBuilder
         public static bool IsDlcBuildEnable() => EnvironmentArguments.GetEnvironmentArgument(Key.BuildDlc) == "true";
         /// <summary> If you're not in batch mode (mean editor mode), then Player Build is intented even BuildApp param is null, otherwise lets set it to false in args.default config file </summary>
         public static bool IsPlayerBuildEnable() => (!UnityEngine.Application.isBatchMode && string.IsNullOrEmpty(EnvironmentArguments.GetEnvironmentArgument(Key.BuildApp))) || EnvironmentArguments.GetEnvironmentArgument(Key.BuildApp) == "true";
+        public static string[] GetAdditionalSymbols()
+        {
+            string args = EnvironmentArguments.GetEnvironmentArgument(Key.AdditionalSymbols);
+
+            if (string.IsNullOrEmpty(args)) return Array.Empty<string>();
+
+            return args.Trim().Split(';');
+        }
+        public static string[] GetScenePaths()
+        {
+            string args = EnvironmentArguments.GetEnvironmentArgument(Key.ScenePaths);
+
+            if (string.IsNullOrEmpty(args)) return Array.Empty<string>();
+
+            return args.Trim().Split(';');
+        }
     }
 }
