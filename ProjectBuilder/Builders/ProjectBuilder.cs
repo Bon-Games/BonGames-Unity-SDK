@@ -64,6 +64,9 @@ namespace BonGames.EasyBuilder
             // Create build options
             Version.LoadVersion();
             BuildPlayerOptions = CreateBuildPlayerOptions();
+            
+            Domain.ThrowIf(!BuildPlayerOptions.scenes.Any(), "There's no scene inlcuded in the build, ensure you have at least 1 scene in either ProjectSettings or passed argument");
+
             // Pre Build
             if (PreBuildProcess != null)
             {
@@ -212,7 +215,6 @@ namespace BonGames.EasyBuilder
             buildPlayerOptions.target = BuildTarget;
             OnBuildPlayerOptionCreate(ref buildPlayerOptions);
 
-            Domain.ThrowIf(!buildPlayerOptions.scenes.Any(), "There's no scene inlcuded in the build, ensure you have at least 1 scene in either ProjectSettings or passed argument");
             return buildPlayerOptions;
         }
 
