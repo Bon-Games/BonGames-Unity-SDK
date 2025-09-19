@@ -17,11 +17,13 @@ namespace BonGames.EasyBuilder
             public const string BuildEnvironment    = "-buildEnv";
             public const string BuildPlatformTarget = "-buildPlatformTarget";
             public const string BuildNumber         = "-buildNumber";
+            public const string BuildVersionString  = "-buildVersionString";
             public const string Product             = "-product";
             public const string BundleId            = "-bundleId";
             public const string ProductCode         = "-productCode";
             public const string ScenePaths          = "-scenes";
             public const string AdditionalSymbols   = "-symbols";
+            public const string ReleaseAlias        = "-releaseAlias";
 
             // Android specified
             public const string KeystorePath        = "-ks";
@@ -39,6 +41,9 @@ namespace BonGames.EasyBuilder
             public const string DlcDestination      = "-dlcDestination";
             public const string DlcProfileName      = "-buildDlcProfile";
 
+            // Git Information
+            public const string GitRevision         = "-gitRevision"; // Git commit hash
+            public const string GitBranch           = "-gitBranch";
         }
 
         public static class Android
@@ -102,5 +107,12 @@ namespace BonGames.EasyBuilder
 
             return args.Trim().Split(';');
         }
+        public static string GetVersionString(string defValue)
+        {
+            string version = EnvironmentArguments.GetEnvironmentArgument(Key.BuildVersionString);
+            return string.IsNullOrEmpty(version) ? defValue : version;
+        }
+        public static string GetGitRevision() => EnvironmentArguments.GetEnvironmentArgument(Key.GitRevision);
+        public static string GetGitBranch() => EnvironmentArguments.GetEnvironmentArgument(Key.GitBranch);
     }
 }
