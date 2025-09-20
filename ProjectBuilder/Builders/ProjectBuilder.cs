@@ -50,6 +50,9 @@ namespace BonGames.EasyBuilder
 
         public UnityEditor.Build.Reporting.BuildReport Build()
         {
+#if JENKINS_BUILD
+            Domain.LogI("Build is triggered from Jenkins");
+#endif
             Prepare();
             BonGames.Tools.EnvironmentArguments.Load();
             // Switch to build target
