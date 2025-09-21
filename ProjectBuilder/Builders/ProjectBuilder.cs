@@ -225,7 +225,7 @@ namespace BonGames.EasyBuilder
 
         private string BuildFileName()
         {
-            string outputFileName = string.IsNullOrEmpty(BuildArguments.GetProductNameCode()) ? BuilderUtils.GetDefaultProductName() : BuildArguments.GetProductNameCode();
+            string outputFileName = string.IsNullOrEmpty(BuildArguments.GetProductNameCode()) ? BuilderUtils.GetProductName() : BuildArguments.GetProductNameCode();
             outputFileName = $"{outputFileName}-{Environment.Shorten()}-{Version.BundleVersion}({Version.Build}){BuilderUtils.GetBuildTargetAppExtension(BuildTarget, Environment)}";
             return outputFileName;
         }
