@@ -10,7 +10,7 @@ namespace BonGames.EasyBuilder
             // Common
             public const string BuildDestination    = "-buildDestination"; // Build folder
             public const string BuildApp            = "-buildApp";
-            
+            public const string CI                  = "-ci"; // True if the build is trigged from Jenkins or a build pipline
 
             // Build Arguments
             public const string BuildAppTarget      = "-buildAppTarget";
@@ -102,5 +102,6 @@ namespace BonGames.EasyBuilder
 
             return args.Trim().Split(';');
         }
+        public static bool IsCIBuild() => EnvironmentArguments.GetEnvironmentArgument(Key.CI) == "true";
     }
 }
