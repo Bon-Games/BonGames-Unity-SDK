@@ -63,20 +63,120 @@ namespace BonGames.EasyBuilder
             ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.iOS, EEnvironment.Development).Build();
         }
 
-#if UNITY_ADDRESSABLE
-        [MenuItem(MenuRunTools + "/Dlc/Build")]
-        public static void AddressableBuild()
+        [MenuItem(MenuRunTools + "/Build/Windows/Development")]
+        public static void BuildWindowsDevelopment()
         {
-            AddressableAssetSettings.BuildPlayerContent();            
+            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.StandaloneWindows, EEnvironment.Development).Build();
         }
 
-        public static void TestAddressable()
+        [MenuItem(MenuRunTools + "/Build/Windows/Staging")]
+        public static void BuildWindowsStaging()
         {
-            string buildProfileId = AddressableAssetSettingsDefaultObject.Settings.profileSettings.GetProfileId("Remote");
-            AddressableAssetSettingsDefaultObject.Settings.profileSettings.SetValue(buildProfileId, "Remote.BuildPath", "abc");
-            EditorUtility.SetDirty(AddressableAssetSettingsDefaultObject.Settings);
+            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.StandaloneWindows, EEnvironment.Staging).Build();
         }
-#endif
+
+        [MenuItem(MenuRunTools + "/Build/Windows/Release")]
+        public static void BuildWindowsRelease()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.StandaloneWindows, EEnvironment.Staging).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/MacOS/Development")]
+        public static void BuildMacOSDevelopment()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.StandaloneOSX, EEnvironment.Development).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/MacOS/Staging")]
+        public static void BuildMacOSStaging()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.StandaloneOSX, EEnvironment.Staging).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/MacOS/Release")]
+        public static void BuildMacOSRelease()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.StandaloneOSX, EEnvironment.Staging).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/Linux/Development")]
+        public static void BuildLinuxDevelopment()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.StandaloneLinux64, EEnvironment.Development).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/Linux/Staging")]
+        public static void BuildLinuxStaging()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.StandaloneLinux64, EEnvironment.Staging).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/Linux/Release")]
+        public static void BuildLinuxRelease()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Client, BuildTarget.StandaloneLinux64, EEnvironment.Staging).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/ServerLinux/Development")]
+        public static void BuildServerLinuxDevelopment()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Server, BuildTarget.StandaloneLinux64, EEnvironment.Development).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/ServerLinux/Staging")]
+        public static void BuildServerLinuxStaging()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Server, BuildTarget.StandaloneLinux64, EEnvironment.Staging).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/ServerLinux/Release")]
+        public static void BuildServerLinuxRelease()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Server, BuildTarget.StandaloneLinux64, EEnvironment.Staging).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/ServerWindows/Development")]
+        public static void BuildServerWindowsDevelopment()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Server, BuildTarget.StandaloneWindows, EEnvironment.Development).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/ServerWindows/Staging")]
+        public static void BuildServerWindowsStaging()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Server, BuildTarget.StandaloneWindows, EEnvironment.Staging).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/ServerWindows/Release")]
+        public static void BuildServerWindowsRelease()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Server, BuildTarget.StandaloneWindows, EEnvironment.Staging).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/ServerMacOS/Development")]
+        public static void BuildServerMacOSDevelopment()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Server, BuildTarget.StandaloneOSX, EEnvironment.Development).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/ServerMacOS/Staging")]
+        public static void BuildServerMacOSStaging()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Server, BuildTarget.StandaloneOSX, EEnvironment.Staging).Build();
+        }
+
+        [MenuItem(MenuRunTools + "/Build/ServerMacOS/Release")]
+        public static void BuildServerMacOSRelease()
+        {
+            ProjectBuilder.CreateBuilder(EAppTarget.Server, BuildTarget.StandaloneOSX, EEnvironment.Staging).Build();
+        }
+
+
+        [MenuItem(MenuRunTools + "/Dlc/Build For Active Target")]
+        public static void AddressableBuild()
+        {
+            DlcBuilder.CreateBuilder(BuilderUtils.GetActiveBuildTarget(), EEnvironment.Development, "Local", null);
+        }
 
         public static void Build()
         {
