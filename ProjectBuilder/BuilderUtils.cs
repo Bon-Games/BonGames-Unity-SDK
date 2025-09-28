@@ -7,6 +7,7 @@ namespace BonGames.EasyBuilder
     using System.Reflection;
     using BonGames.Tools;
     using BonGames.Tools.Enum;
+    using System;
 
     public static class BuilderUtils
     {
@@ -202,8 +203,7 @@ namespace BonGames.EasyBuilder
 
         public static int GetSubBuildTarget(EAppTarget appTarget, BuildTarget buildTarget)
         {
-            string buildTargetName = buildTarget.ToString();
-            if (buildTargetName.StartsWith("Standalone"))
+            if (BuilderUtils.IsStandalone(buildTarget))
             {
                 switch (appTarget)
                 {
@@ -244,9 +244,10 @@ namespace BonGames.EasyBuilder
             return System.IO.Path.Combine(UnityEngine.Application.dataPath, "../", "BuildCache");
         }
 
-        public static BuildPlayerOptions GetDefaultBuildPlayerOptions(EAppTarget appTarget, EEnvironment buildEnv)
+        public static List<string> GetDefaultScriptSymbols(EAppTarget appTarget, BuildTarget buildTarget, EEnvironment buildEnv)
         {
-            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+            NamedBuildTarget namedBuildTarget = BuilderUtils.GetNamedBuildTarget(appTarget, buildTarget);
+            PlayerSettings.GetScriptingDefineSymbols(namedBuildTarget, out string[] currentSymbols);
 
             BuildOptions options = BuildOptions.None;
             List<string> defines = null;
@@ -279,6 +280,7 @@ namespace BonGames.EasyBuilder
                 case EEnvironment.Release:
                 case EEnvironment.Distribution:
                     {
+                        options |= BuildOptions.CleanBuildCache;
                         defines = new List<string>()
                         {
                             BuildDefines.ReleaseBuild,
@@ -287,19 +289,35 @@ namespace BonGames.EasyBuilder
                     break;
             }
 
-            string[] currentSymbols = BuilderUtils.GetActiveBuildTargetDefineSymbols();
-            List<string> internalDefineSymbols = BuilderUtils.GetAllScriptSymbols();
-
-            for (int i = 0; i < currentSymbols.Length; i++)
+            if (appTarget == EAppTarget.Server)
             {
-                string symbol = currentSymbols[i];
-                // Ignore interal symbol as them will be added/re-added by internal logic
-                if (string.IsNullOrEmpty(symbol) || internalDefineSymbols.Contains(symbol)) continue;
-
-                // Keep the external ones such as DOTWEEN
-                defines.Add(symbol);
+                defines.Add(BuildDefines.DedicatedServerBuild);
             }
 
+            if (currentSymbols != null && currentSymbols.Length > 0)
+            {
+                List<string> allInternalSymbols = BuilderUtils.GetAllScriptSymbols();
+
+                for (int i = 0; i < currentSymbols.Length; i++)
+                {
+                    string symbol = currentSymbols[i];
+
+                    if (allInternalSymbols.Contains(symbol))
+                        continue; // Ingnore Internal Symbols
+
+                    // Keep the symbols from external
+                    defines.Add(symbol);
+                }
+            }
+            
+            return defines;
+        }
+
+        public static BuildPlayerOptions GetDefaultBuildPlayerOptions(EAppTarget appTarget, EEnvironment buildEnv)
+        {
+            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+            BuildOptions options = BuildOptions.None;
+            List<string> defines = GetDefaultScriptSymbols(appTarget, GetActiveBuildTarget(), buildEnv);   
             buildPlayerOptions.options = options;
             buildPlayerOptions.extraScriptingDefines = defines.ToArray();
             return buildPlayerOptions;
@@ -333,7 +351,7 @@ namespace BonGames.EasyBuilder
                 default: return "undefined";
             }
         }
-    
+
         public static string GetOutputFileName(string defValue)
         {
             string nameWithtouExtension = BuildArguments.GetOutputFileName();

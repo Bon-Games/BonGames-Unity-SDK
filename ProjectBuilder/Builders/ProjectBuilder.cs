@@ -212,75 +212,16 @@ namespace BonGames.EasyBuilder
 
         public BuildPlayerOptions GetDefaultBuildPlayerOptions()
         {
-            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
-            NamedBuildTarget namedBuildTarget = BuilderUtils.GetNamedBuildTarget(AppTarget, BuildTarget);
-            PlayerSettings.GetScriptingDefineSymbols(namedBuildTarget, out string[] currentSymbols);
-
-            BuildOptions options = BuildOptions.None;
-            List<string> defines = null;
-            switch (Environment)
+            BuildPlayerOptions buildPlayerOptions = BuilderUtils.GetDefaultBuildPlayerOptions(AppTarget, Environment);
+            
+            List<string> symbols = new List<string>(buildPlayerOptions.extraScriptingDefines);
+            if (PlatformSpecifiedSymbols != null && PlatformSpecifiedSymbols.Count > 0)
             {
-                case EEnvironment.Debug:
-                case EEnvironment.Development:
-                    {
-                        options = BuildOptions.Development;
-                        defines = new List<string>()
-                        {
-                            BuildDefines.EnableLog,
-                            BuildDefines.DevelopmentBuild,
-                            BuildDefines.InternalBuild,
-                            BuildDefines.DebugLog,
-                        };
-                    }
-                    break;
-                case EEnvironment.Staging:
-                    {
-                        defines = new List<string>()
-                        {
-                            BuildDefines.EnableLog,
-                            BuildDefines.StagingBuild,
-                            BuildDefines.InternalBuild,
-                            BuildDefines.DebugLog,
-                        };
-                    }
-                    break;
-                case EEnvironment.Release:
-                case EEnvironment.Distribution:
-                    {
-                        options |= BuildOptions.CleanBuildCache;
-                        defines = new List<string>()
-                        {
-                            BuildDefines.ReleaseBuild,
-                        };
-                    }
-                    break;
+                symbols.AddRange(PlatformSpecifiedSymbols);
             }
+            symbols.AddRange(BuildArguments.GetAdditionalSymbols());
 
-            if (currentSymbols != null && currentSymbols.Length > 0)
-            {
-                List<string> allInternalSymbols = BuilderUtils.GetAllScriptSymbols();
-
-                for (int i = 0; i < currentSymbols.Length; i++)
-                {
-                    string symbol = currentSymbols[i];
-
-                    if (allInternalSymbols.Contains(symbol))
-                        continue; // Ingnore Internal Symbols
-
-                    // Keep the symbols from external
-                    defines.Add(symbol);
-                }
-            }
-
-            if (PlatformSpecifiedSymbols != null)
-            {
-                defines.AddRange(PlatformSpecifiedSymbols);
-            }
-
-            defines.AddRange(BuildArguments.GetAdditionalSymbols());
-
-            buildPlayerOptions.options = options;
-            buildPlayerOptions.extraScriptingDefines = defines.ToArray();
+            buildPlayerOptions.extraScriptingDefines = symbols.ToArray();
             return buildPlayerOptions;
         }
 
