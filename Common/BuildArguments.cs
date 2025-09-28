@@ -1,5 +1,7 @@
-using BonGames.Tools;
 using System;
+using BonGames.Tools;
+using BonGames.CommandLine;
+
 
 namespace BonGames.EasyBuilder
 {
@@ -11,6 +13,7 @@ namespace BonGames.EasyBuilder
             public const string BuildDestination    = "-buildDestination"; // Build folder
             public const string BuildApp            = "-buildApp";
             public const string CI                  = "-ci"; // True if the build is trigged from Jenkins or a build pipline
+            public const string OutputFileName      = "-outputFileName"; // Eg: [ProductCode]-[BuildEnvironment]-[BuildVersionString]-([BuildNumber])
 
             // Build Arguments
             public const string BuildAppTarget      = "-buildAppTarget";
@@ -50,50 +53,52 @@ namespace BonGames.EasyBuilder
         {
             public static string GetKeystorePath()
             {
-                string relativePath = EnvironmentArguments.GetEnvironmentArgument(Key.KeystorePath);
+                string relativePath = ArgumentsResolver.GetEnvironmentArgument(Key.KeystorePath);
                 if (!string.IsNullOrEmpty(relativePath))
                 {
                     return System.IO.Path.Combine(UnityEngine.Application.dataPath, "..", relativePath);
                 }
                 return null;
             }
-            public static string GetKeystorePassword() => EnvironmentArguments.GetEnvironmentArgument(Key.KeystorePassword);
-            public static string GetAlias() => EnvironmentArguments.GetEnvironmentArgument(Key.Alias);
-            public static string GetAliasPassword() => EnvironmentArguments.GetEnvironmentArgument(Key.AliasPassword);
-            public static bool IsBuildAAB() => EnvironmentArguments.GetEnvironmentArgument(Key.BuildAAB) == "true";
+            public static string GetKeystorePassword() => ArgumentsResolver.GetEnvironmentArgument(Key.KeystorePassword);
+            public static string GetAlias() => ArgumentsResolver.GetEnvironmentArgument(Key.Alias);
+            public static string GetAliasPassword() => ArgumentsResolver.GetEnvironmentArgument(Key.AliasPassword);
+            public static bool IsBuildAAB() => ArgumentsResolver.GetEnvironmentArgument(Key.BuildAAB) == "true";
         }
 
         public static class IOS
         {
-            public static string GetProvisioningId() => EnvironmentArguments.GetEnvironmentArgument(Key.ProvisioningId);
-            public static string GetTeamId() => EnvironmentArguments.GetEnvironmentArgument(Key.DevelopmentTeamId);
+            public static string GetProvisioningId() => ArgumentsResolver.GetEnvironmentArgument(Key.ProvisioningId);
+            public static string GetTeamId() => ArgumentsResolver.GetEnvironmentArgument(Key.DevelopmentTeamId);
         }
+
+        public static class Standalone { }        
 
         public static int GetBuildNumber(int defValue = 1)
         {
-            string input = EnvironmentArguments.GetEnvironmentArgument(Key.BuildNumber);
+            string input = ArgumentsResolver.GetEnvironmentArgument(Key.BuildNumber);
             if (int.TryParse(input, out int buildNumber))
             {
                 return buildNumber;
             }
             return defValue;
         }
-        public static string GetProductName() => EnvironmentArguments.GetEnvironmentArgument(Key.Product);      
-        public static string GetProductNameCode() => EnvironmentArguments.GetEnvironmentArgument(Key.ProductCode);
-        public static string GetBundleId() => EnvironmentArguments.GetEnvironmentArgument(Key.BundleId);
-        public static string GetBuildDestination() => EnvironmentArguments.GetEnvironmentArgument(Key.BuildDestination);
-        public static string GetDlcDestination() => EnvironmentArguments.GetEnvironmentArgument(Key.DlcDestination);
+        public static string GetProductName() => ArgumentsResolver.GetEnvironmentArgument(Key.Product);      
+        public static string GetProductNameCode() => ArgumentsResolver.GetEnvironmentArgument(Key.ProductCode);
+        public static string GetBundleId() => ArgumentsResolver.GetEnvironmentArgument(Key.BundleId);
+        public static string GetBuildDestination() => ArgumentsResolver.GetEnvironmentArgument(Key.BuildDestination);
+        public static string GetDlcDestination() => ArgumentsResolver.GetEnvironmentArgument(Key.DlcDestination);
         public static string GetDlcProfileName(string def)
         {
-            string profileName = EnvironmentArguments.GetEnvironmentArgument(Key.DlcProfileName);
+            string profileName = ArgumentsResolver.GetEnvironmentArgument(Key.DlcProfileName);
             return string.IsNullOrEmpty(profileName) ? def : profileName;
         }
-        public static bool IsDlcBuildEnable() => EnvironmentArguments.GetEnvironmentArgument(Key.BuildDlc) == "true";
+        public static bool IsDlcBuildEnable() => ArgumentsResolver.GetEnvironmentArgument(Key.BuildDlc) == "true";
         /// <summary> If you're not in batch mode (mean editor mode), then Player Build is intented even BuildApp param is null, otherwise lets set it to false in args.default config file </summary>
-        public static bool IsPlayerBuildEnable() => (!UnityEngine.Application.isBatchMode && string.IsNullOrEmpty(EnvironmentArguments.GetEnvironmentArgument(Key.BuildApp))) || EnvironmentArguments.GetEnvironmentArgument(Key.BuildApp) == "true";
+        public static bool IsPlayerBuildEnable() => (!UnityEngine.Application.isBatchMode && string.IsNullOrEmpty(ArgumentsResolver.GetEnvironmentArgument(Key.BuildApp))) || ArgumentsResolver.GetEnvironmentArgument(Key.BuildApp) == "true";
         public static string[] GetAdditionalSymbols()
         {
-            string args = EnvironmentArguments.GetEnvironmentArgument(Key.AdditionalSymbols);
+            string args = ArgumentsResolver.GetEnvironmentArgument(Key.AdditionalSymbols);
 
             if (string.IsNullOrEmpty(args)) return Array.Empty<string>();
 
@@ -101,22 +106,20 @@ namespace BonGames.EasyBuilder
         }
         public static string[] GetScenePaths()
         {
-            string args = EnvironmentArguments.GetEnvironmentArgument(Key.ScenePaths);
+            string args = ArgumentsResolver.GetEnvironmentArgument(Key.ScenePaths);
 
             if (string.IsNullOrEmpty(args)) return Array.Empty<string>();
 
             return args.Trim().Split(';');
         }
-
-        public static bool IsCIBuild() => EnvironmentArguments.GetEnvironmentArgument(Key.CI) == "true";
-
+        public static bool IsCIBuild() => ArgumentsResolver.GetEnvironmentArgument(Key.CI) == "true";
         public static string GetVersionString(string defValue)
         {
-            string version = EnvironmentArguments.GetEnvironmentArgument(Key.BuildVersionString);
+            string version = ArgumentsResolver.GetEnvironmentArgument(Key.BuildVersionString);
             return string.IsNullOrEmpty(version) ? defValue : version;
         }
-        public static string GetGitRevision() => EnvironmentArguments.GetEnvironmentArgument(Key.GitRevision);
-        public static string GetGitBranch() => EnvironmentArguments.GetEnvironmentArgument(Key.GitBranch);
-
+        public static string GetGitRevision() => ArgumentsResolver.GetEnvironmentArgument(Key.GitRevision);
+        public static string GetGitBranch() => ArgumentsResolver.GetEnvironmentArgument(Key.GitBranch);
+        public static string GetOutputFileName() => ArgumentsExpander.ExpandArguments(ArgumentsResolver.GetEnvironmentArgument(Key.OutputFileName));
     }
 }

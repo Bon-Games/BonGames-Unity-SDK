@@ -1,53 +1,15 @@
 
-namespace BonGames.Tools
+namespace BonGames.CommandLine
 {
+    using System.Text;
+    using BonGames.Tools;
     using System.Collections.Generic;
 
-    public static class EnvironmentArguments
-    {
-        public static class Key
-        {
-            public const string ApplicationMode = "-app-mode";
-            public const string NetworkMode = "-net-mode";
-            /// <summary>
-            /// The port at which the specific server/client instance is accessible.
-            /// </summary>
-            public const string Port = "-port";
-            /// <summary>
-            /// The IP address of the server instance.
-            /// </summary>
-            public const string Ipv4 = "-ipv4";
-            /// <summary>
-            /// The IPv6 address of the server instance, if available.
-            /// </summary>
-            public const string Ipv6 = "-ipv6";
-
-            // Additional for Unity Game Server Hosting (Multiplay)
-            /// <summary>
-            /// The unique ID of the allocation
-            /// </summary>
-            public const string AllocatedID = "-allocatedID";
-            /// <summary>
-            /// The IP address of the server instance. (Ipv4)
-            /// </summary>
-            public const string Ip = "-ip";
-            /// <summary>
-            /// The unique identifier of the server instance.
-            /// </summary>
-            public const string ServerID = "-serverID";
-            /// <summary>
-            /// The query protocol the server instance uses.
-            /// </summary>
-            public const string QueryType = "-queryType";
-            /// <summary>
-            /// The port at which you can access the query protocol data.
-            /// </summary>
-            public const string QueryPort = "-queryPort";
-        }
-
+    public static class ArgumentsResolver
+    {     
         private static Dictionary<string, string> s_startupArguments { get; set; }
 
-        static EnvironmentArguments()
+        static ArgumentsResolver()
         {
             Load();
         }
@@ -60,14 +22,16 @@ namespace BonGames.Tools
 
         public static void Print()
         {
+            StringBuilder logger = new();
             if (s_startupArguments != null)
             {
-                Domain.LogI($"Environment Arguments");
+                logger.AppendLine($"Command Arguments");
                 foreach (var item in s_startupArguments)
                 {
-                    Domain.LogI($"{item.Key}:{item.Value}");
+                    logger.AppendLine($"{item.Key}:{item.Value}");
                 }
             }
+            Domain.LogI($"{logger}");
         }
 
         public static Dictionary<string, string> GetCommandlineArgs()
@@ -75,16 +39,17 @@ namespace BonGames.Tools
             Dictionary<string, string> argDictionary = new();
 
             string[] args = System.Environment.GetCommandLineArgs();
+            const string dash = "-";
 
             for (int i = 0; i < args.Length; i++)
             {
-                string arg = args[i].ToLower();
-                if (arg.StartsWith("-"))
+                string arg = args[i];
+                if (arg.StartsWith(dash))
                 {
                     string value = i < args.Length - 1 ? args[i + 1] : null;
                     if (!string.IsNullOrEmpty(value))
                     {
-                        value = value.StartsWith("-") ? null : value;
+                        value = value.StartsWith(dash) ? null : value;
                     }
                     argDictionary.Add(arg, value);
                 }
@@ -95,8 +60,9 @@ namespace BonGames.Tools
             Dictionary<string, string> defaultArgs = LoadDefaultArguments();
             foreach (KeyValuePair<string, string> it in defaultArgs)
             {
-                string key = it.Key.ToLower();
-                if (argDictionary.ContainsKey(key))
+                string key = it.Key;
+                string keyLower = it.Key.ToLower();
+                if (argDictionary.ContainsKey(key) || argDictionary.ContainsKey(keyLower))
                 {
                     BonGames.Tools.Domain.LogW($"Default arugment {key} is ignore due to value is passed in Value:{it.Value}");
                     continue;

@@ -52,7 +52,7 @@ namespace BonGames.EasyBuilder
         public UnityEditor.Build.Reporting.BuildReport Build()
         {
             Prepare();
-            BonGames.Tools.EnvironmentArguments.Load();
+            BonGames.CommandLine.ArgumentsResolver.Load();
             // Switch to build target
             BuildTargetGroup buildGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
             if (buildGroup != BuilderUtils.GetActiveBuildTargetGroup() || BuildTarget != BuilderUtils.GetActiveBuildTarget())
@@ -227,8 +227,8 @@ namespace BonGames.EasyBuilder
         private string BuildFileName()
         {
             string outputFileName = string.IsNullOrEmpty(BuildArguments.GetProductNameCode()) ? BuilderUtils.GetProductName() : BuildArguments.GetProductNameCode();
-            outputFileName = $"{outputFileName}-{Environment.Shorten()}-{Version.BundleVersion}({Version.Build}){BuilderUtils.GetBuildTargetAppExtension(BuildTarget, Environment)}";
-            return outputFileName;
+            outputFileName = $"{outputFileName}-{Environment.Shorten()}-{Version.BundleVersion}({Version.Build})";
+            return $"{BuilderUtils.GetOutputFileName(outputFileName)}{BuilderUtils.GetBuildTargetAppExtension(BuildTarget, Environment)}";
         }
 
         public BuildPlayerOptions GetDefaultBuildPlayerOptions()

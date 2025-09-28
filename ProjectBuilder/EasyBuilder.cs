@@ -4,7 +4,8 @@ namespace BonGames.EasyBuilder
     using UnityEngine;
     using BonGames.Tools;
     using System.Text;
-  using BonGames.Tools.Enum;
+    using BonGames.Tools.Enum;
+    using BonGames.CommandLine;
 #if UNITY_ADDRESSABLE
     using UnityEditor.AddressableAssets;
     using UnityEditor.AddressableAssets.Settings;
@@ -84,16 +85,16 @@ namespace BonGames.EasyBuilder
             {
                 if (!Application.isBatchMode) throw new System.Exception("This method only supports batmode for now");
 
-                if (!System.Enum.TryParse<EEnvironment>(EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildEnvironment), true, out EEnvironment env))
-                    throw new System.Exception($"Build Environment is invalid with value {EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildEnvironment)}");
+                if (!System.Enum.TryParse<EEnvironment>(ArgumentsResolver.GetEnvironmentArgument(BuildArguments.Key.BuildEnvironment), true, out EEnvironment env))
+                    throw new System.Exception($"Build Environment is invalid with value {ArgumentsResolver.GetEnvironmentArgument(BuildArguments.Key.BuildEnvironment)}");
 
 
-                if (!System.Enum.TryParse<EAppTarget>(EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildAppTarget), true, out EAppTarget appTarget))
-                    throw new System.Exception($"App Target is invalid with value {EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildAppTarget)}");
+                if (!System.Enum.TryParse<EAppTarget>(ArgumentsResolver.GetEnvironmentArgument(BuildArguments.Key.BuildAppTarget), true, out EAppTarget appTarget))
+                    throw new System.Exception($"App Target is invalid with value {ArgumentsResolver.GetEnvironmentArgument(BuildArguments.Key.BuildAppTarget)}");
 
 
-                if (!System.Enum.TryParse<BuildTarget>(EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildPlatformTarget), true, out BuildTarget buildTarget))
-                    throw new System.Exception($"Build Platform Target is invalid with value {EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildPlatformTarget)}");
+                if (!System.Enum.TryParse<BuildTarget>(ArgumentsResolver.GetEnvironmentArgument(BuildArguments.Key.BuildPlatformTarget), true, out BuildTarget buildTarget))
+                    throw new System.Exception($"Build Platform Target is invalid with value {ArgumentsResolver.GetEnvironmentArgument(BuildArguments.Key.BuildPlatformTarget)}");
 
                 // If report is Null, then Player Build was intended to be ignored
                 // So ONLY error could be arised in that case is Dlc building process which would throw an exception if an error occurs, then the catch block would be invoke

@@ -6,15 +6,15 @@ namespace BonGames.EasyBuilder
     using System.Linq;
     using System.Reflection;
     using BonGames.Tools;
-  using BonGames.Tools.Enum;
+    using BonGames.Tools.Enum;
 
-  public static class BuilderUtils
+    public static class BuilderUtils
     {
-        private const string Tag = "[" + nameof(BuilderUtils) +"]";
+        private const string Tag = "[" + nameof(BuilderUtils) + "]";
 
         public static string GetBuildTargetAppExtension(BuildTarget target, EEnvironment env)
         {
-            switch(target)
+            switch (target)
             {
                 case BuildTarget.StandaloneWindows:
                 case BuildTarget.StandaloneWindows64:
@@ -31,8 +31,8 @@ namespace BonGames.EasyBuilder
 
             EasyBuilder.LogE($"{Tag} Get extension for build target {target} is not supported yet");
             return string.Empty;
-        }        
-    
+        }
+
         public static NamedBuildTarget GetNamedBuildTarget(EAppTarget appTarget, BuildTarget target)
         {
             NamedBuildTarget result = default;
@@ -61,11 +61,11 @@ namespace BonGames.EasyBuilder
                 else
                 {
                     EasyBuilder.LogE($"{Tag} {target} is not supported to get named build target");
-                }            
+                }
             }
             return result;
         }
-    
+
         public static BuildTarget GetActiveBuildTarget()
         {
             return EditorUserBuildSettings.activeBuildTarget;
@@ -167,6 +167,21 @@ namespace BonGames.EasyBuilder
             return UnityEngine.Application.productName;
         }
 
+        public static string GetProductName()
+        {
+            string overrideProdName = BuildArguments.GetProductName();
+            return string.IsNullOrEmpty(overrideProdName) ? GetDefaultProductName() : overrideProdName;
+        }
+
+        public static EEnvironment GetBuildEnvironment()
+        {
+            if (System.Enum.TryParse<EEnvironment>(BonGames.CommandLine.ArgumentsResolver.GetEnvironmentArgument(BuildArguments.Key.BuildEnvironment), true, out EEnvironment env))
+            {
+                return env;
+            }
+            return EEnvironment.Development;
+        }
+
         public static BuildTargetGroup GetBuildTargetGroup(BuildTarget target)
         {
             switch (target)
@@ -211,9 +226,9 @@ namespace BonGames.EasyBuilder
                 .GetFields(BindingFlags.Default | BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
                 .Select(p => p?.GetRawConstantValue().ToString())
                 .Where(symbol => !string.IsNullOrEmpty(symbol))
-                .ToList();                
+                .ToList();
         }
-    
+
         public static string BuildInformationDirectory()
         {
             string dir = System.IO.Path.Combine(UnityEngine.Application.dataPath, "../", "BuildInformation");
@@ -294,12 +309,12 @@ namespace BonGames.EasyBuilder
         {
             switch (env)
             {
-                case EEnvironment.Debug:        return "debug";
-                case EEnvironment.Development:  return "dev";
-                case EEnvironment.Staging:      return "stg";
-                case EEnvironment.Release:      return "release";
+                case EEnvironment.Debug: return "debug";
+                case EEnvironment.Development: return "dev";
+                case EEnvironment.Staging: return "stg";
+                case EEnvironment.Release: return "release";
                 case EEnvironment.Distribution: return "dist";
-                default:                        return "undefined";
+                default: return "undefined";
             }
         }
 
@@ -308,15 +323,21 @@ namespace BonGames.EasyBuilder
             switch (env)
             {
                 case EEnvironment.Debug:
-                case EEnvironment.Development: 
+                case EEnvironment.Development:
                     return "dev";
-                case EEnvironment.Staging: 
+                case EEnvironment.Staging:
                     return "stg";
                 case EEnvironment.Release:
-                case EEnvironment.Distribution: 
+                case EEnvironment.Distribution:
                     return "release";
                 default: return "undefined";
             }
+        }
+    
+        public static string GetOutputFileName(string defValue)
+        {
+            string nameWithtouExtension = BuildArguments.GetOutputFileName();
+            return string.IsNullOrEmpty(nameWithtouExtension) ? defValue : nameWithtouExtension;
         }
     }
 }
