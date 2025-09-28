@@ -4,7 +4,9 @@
 	"displayName": "Easy Builder",
 	"description": "Unity Project Builder which supports batch mode to integrate CIDI.",
 	"unity": "2018.3",
-    "dependencies": {},
+    "dependencies": {
+    	"com.unity.nuget.newtonsoft-json": "3.2.1"
+    },
 	"keywords": [
         "Jenkins",
         "Pipeline",
