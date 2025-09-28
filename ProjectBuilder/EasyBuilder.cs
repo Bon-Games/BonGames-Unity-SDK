@@ -175,7 +175,7 @@ namespace BonGames.EasyBuilder
         [MenuItem(MenuRunTools + "/Dlc/Build For Active Target")]
         public static void AddressableBuild()
         {
-            DlcBuilder.CreateBuilder(BuilderUtils.GetActiveBuildTarget(), EEnvironment.Development, "Local", null);
+            DlcBuilder.CreateBuilder(BuilderUtils.GetActiveBuildTarget(), EEnvironment.Development, "Local", null).Build(out _);
         }
 
         public static void Build()
