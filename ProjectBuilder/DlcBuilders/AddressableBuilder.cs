@@ -4,13 +4,13 @@ using UnityEditor;
 using System.Collections;
 using BonGames.Tools.Enum;
 using System.Collections.Generic;
-using static UnityEditor.AddressableAssets.Settings.AddressableAssetSettings;
 
 
 #if UNITY_ADDRESSABLE
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Build;
 using UnityEditor.AddressableAssets.Settings;
+using static UnityEditor.AddressableAssets.Settings.AddressableAssetSettings;
 #endif
 
 namespace BonGames.EasyBuilder
@@ -22,12 +22,14 @@ namespace BonGames.EasyBuilder
         {
 #if !UNITY_ADDRESSABLE
             throw new System.Exception("Addressable is disabled");
-#endif
+#else
             AddressableAssetSettingsDefaultObject.Settings.BuildAddressablesWithPlayerBuild = PlayerBuildOption.DoNotBuildWithPlayer;
+#endif
         }
 
         protected override void Setup()
         {
+            #if UNITY_ADDRESSABLE
             string dlcDestination = this.BuildDestination;
 
             // The build argument can be lower case, so have to search for it
@@ -57,14 +59,19 @@ namespace BonGames.EasyBuilder
                 logger.AppendLine($"with {varName}={AddressableAssetSettingsDefaultObject.Settings.profileSettings.GetValueByName(buildProfileId, varName)}");
             }
             this.LogI($"{logger}");
+            #endif
         }
 
         protected override bool StartBuildDlc(out string report)
         {
+#if !UNITY_ADDRESSABLE
+            throw new System.Exception("Addressable is disabled");
+#else
             AddressableAssetSettings.CleanPlayerContent();
             AddressableAssetSettings.BuildPlayerContent(out AddressablesPlayerBuildResult rst);
             report = rst.Error;
             return string.IsNullOrEmpty(rst.Error);
+#endif
         }
     }
 }
