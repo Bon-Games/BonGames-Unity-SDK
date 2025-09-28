@@ -1,5 +1,6 @@
 using BonGames.Tools.Enum;
 using UnityEditor;
+using static BonGames.EasyBuilder.BuildArguments;
 
 namespace BonGames.EasyBuilder
 {
@@ -24,10 +25,12 @@ namespace BonGames.EasyBuilder
                 case BuildTarget.iOS:
                     s_instance = new IOSBuilder(buildEvn);
                     break;
-                default:
-                    return null;
             }
 
+            if (BuilderUtils.IsStandalone(target))
+            {
+                s_instance = new StandaloneBuilder(appTarget, target, buildEvn);
+            }
             return s_instance;
         }
 

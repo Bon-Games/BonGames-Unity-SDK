@@ -57,9 +57,14 @@ namespace BonGames.EasyBuilder
             BuildTargetGroup buildGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
             if (buildGroup != BuilderUtils.GetActiveBuildTargetGroup() || BuildTarget != BuilderUtils.GetActiveBuildTarget())
             {
-                BonGames.Tools.Domain.LogI($"Switching build target to BuildGroup:{buildGroup} BuildTarget:{BuildTarget}");
+                EasyBuilder.LogI($"Switching build target to BuildGroup:{buildGroup} BuildTarget:{BuildTarget}");
                 bool switchRes = EditorUserBuildSettings.SwitchActiveBuildTarget(buildGroup, BuildTarget);
                 BonGames.Tools.Domain.ThrowIf(!switchRes, $"SwitchingError: Switching build target to BuildGroup:{buildGroup} BuildTarget:{BuildTarget}");
+
+                if (BuilderUtils.IsStandalone(BuildTarget))
+                {
+                    EditorUserBuildSettings.standaloneBuildSubtarget = this.AppTarget == EAppTarget.Server ? StandaloneBuildSubtarget.Server : StandaloneBuildSubtarget.Player;
+                }
             }
 
             // Create build options
