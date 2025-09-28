@@ -6,8 +6,9 @@ namespace BonGames.EasyBuilder
     using System.Linq;
     using System.Reflection;
     using BonGames.Tools;
+  using BonGames.Tools.Enum;
 
-    public static class BuilderUtils
+  public static class BuilderUtils
     {
         private const string Tag = "[" + nameof(BuilderUtils) +"]";
 
@@ -165,11 +166,6 @@ namespace BonGames.EasyBuilder
         {
             return UnityEngine.Application.productName;
         }
-        public static string GetProductName()
-        {
-            string customName = BuildArguments.GetProductName();
-            return string.IsNullOrEmpty(customName) ? GetDefaultProductName() : customName;
-        }
 
         public static BuildTargetGroup GetBuildTargetGroup(BuildTarget target)
         {
@@ -321,15 +317,6 @@ namespace BonGames.EasyBuilder
                     return "release";
                 default: return "undefined";
             }
-        }
-
-        public static EEnvironment GetBuildEnvironment()
-        {
-            if (!System.Enum.TryParse<EEnvironment>(EnvironmentArguments.GetEnvironmentArgument(BuildArguments.Key.BuildEnvironment), true, out EEnvironment env))
-            {
-                return EEnvironment.Development;
-            }
-            return env;
         }
     }
 }

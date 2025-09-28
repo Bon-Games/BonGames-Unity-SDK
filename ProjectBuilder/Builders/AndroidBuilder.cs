@@ -1,4 +1,5 @@
 using BonGames.Tools;
+using BonGames.Tools.Enum;
 using UnityEditor;
 
 namespace BonGames.EasyBuilder

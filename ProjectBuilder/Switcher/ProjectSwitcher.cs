@@ -2,7 +2,10 @@ namespace BonGames.EasyBuilder
 {
     using UnityEditor;
     using System.Collections.Generic;
-    public static class ProjectSwitcher
+  using BonGames.Tools;
+  using BonGames.Tools.Enum;
+
+  public static class ProjectSwitcher
     {
         public static void ClearScriptingDefineSymbols()
         {

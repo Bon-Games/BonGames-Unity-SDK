@@ -2,6 +2,7 @@ using BonGames.Tools;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using BonGames.Tools.Enum;
 using UnityEditor;
 using UnityEditor.Build;
 
