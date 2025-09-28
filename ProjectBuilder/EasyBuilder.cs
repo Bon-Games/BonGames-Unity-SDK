@@ -102,7 +102,7 @@ namespace BonGames.EasyBuilder
                 isSuccess = !BuildArguments.IsPlayerBuildEnable() || report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded;
                 if (isSuccess)
                 {
-                    Domain.LogI("Build process completed without error");
+                    LogI("Build process completed without error");
                 }
                 else
                 {

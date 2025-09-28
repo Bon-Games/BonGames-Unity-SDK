@@ -84,37 +84,14 @@ namespace BonGames.EasyBuilder
             BuilderUtils.SetScriptingDefineSymbolsToActiveBuildTarget(BuildPlayerOptions.extraScriptingDefines);
 
             // Build DLC
-            // TODO: This could be sepeated from build player
 #if UNITY_ADDRESSABLE
             if (BuildArguments.IsDlcBuildEnable())
             {
                 string dlcDestination = BuildArguments.GetDlcDestination();
                 string profileName = BuildArguments.GetDlcProfileName("Remote") ?? string.Empty;
-                // The build argument is lower case, so have to search for it
-                List<string> profileNames = AddressableAssetSettingsDefaultObject.Settings.profileSettings.GetAllProfileNames();
-                profileName = profileNames.Contains(profileName) ? profileName : profileNames.FirstOrDefault(p => profileName.ToLower().Equals(p.ToLower()));
-                string buildProfileId = AddressableAssetSettingsDefaultObject.Settings.profileSettings.GetProfileId(profileName);
-
-                BonGames.Tools.Domain.ThrowIf(string.IsNullOrEmpty(buildProfileId), $"Dlc profile name couldn't be found: {profileName}");
-                AddressableAssetSettingsDefaultObject.Settings.activeProfileId = buildProfileId;
-                BonGames.Tools.Domain.LogI($"Set Dlc active profile to {profileName}:{buildProfileId}");
-                if (!string.IsNullOrEmpty(dlcDestination))
-                {
-                    dlcDestination = $"{dlcDestination}/[Environment]/[UnityEditor.PlayerSettings.bundleVersion]/[BuildTarget]";
-                    BonGames.Tools.Domain.LogI($"Set Dlc build destination to {dlcDestination}");
-
-                    AddressableAssetSettingsDefaultObject.Settings.profileSettings.SetValue(buildProfileId, "Remote.BuildPath", dlcDestination);
-                    AddressableAssetSettingsDefaultObject.Settings.profileSettings.SetValue(buildProfileId, "Environment", this.Environment.ShortenSimplified());
-                    EditorUtility.SetDirty(AddressableAssetSettingsDefaultObject.Settings);
-                    AssetDatabase.SaveAssets();
-                }
-                BonGames.Tools.Domain.LogI($"Start building dlc with ProfileId:{buildProfileId}");
-                foreach (string varName in AddressableAssetSettingsDefaultObject.Settings.profileSettings.GetVariableNames()) 
-                {
-                    BonGames.Tools.Domain.LogI($"with {varName}={AddressableAssetSettingsDefaultObject.Settings.profileSettings.GetValueByName(buildProfileId, varName)}");
-                }
-                AddressableAssetSettings.BuildPlayerContent(out AddressablesPlayerBuildResult rst);
-                BonGames.Tools.Domain.ThrowIf(!string.IsNullOrEmpty(rst.Error), $"Dlc build failed:\n{rst.Error}");
+                IDlcBuilder dlcBuilder = DlcBuilder.CreateBuilder(this.BuildTarget, this.Environment, profileName, dlcDestination);
+                bool dlcBuildResult = dlcBuilder.Build(out string report);
+                BonGames.Tools.Domain.ThrowIf(!dlcBuildResult, $"Dlc build failed:\n{report}");
             }
 #endif
 
