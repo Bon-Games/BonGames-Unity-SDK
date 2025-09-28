@@ -54,23 +54,11 @@ namespace BonGames.EasyBuilder
             Prepare();
             BonGames.CommandLine.ArgumentsResolver.Load();
             // Switch to build target
-            BuildTargetGroup buildGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
-            if (buildGroup != BuilderUtils.GetActiveBuildTargetGroup() || BuildTarget != BuilderUtils.GetActiveBuildTarget())
-            {
-                EasyBuilder.LogI($"Switching build target to BuildGroup:{buildGroup} BuildTarget:{BuildTarget}");
-                bool switchRes = EditorUserBuildSettings.SwitchActiveBuildTarget(buildGroup, BuildTarget);
-                BonGames.Tools.Domain.ThrowIf(!switchRes, $"SwitchingError: Switching build target to BuildGroup:{buildGroup} BuildTarget:{BuildTarget}");
-
-                if (BuilderUtils.IsStandalone(BuildTarget))
-                {
-                    EditorUserBuildSettings.standaloneBuildSubtarget = this.AppTarget == EAppTarget.Server ? StandaloneBuildSubtarget.Server : StandaloneBuildSubtarget.Player;
-                }
-            }
+            ProjectSwitcher.SwitchTo(AppTarget, Environment, BuildTarget);
 
             // Create build options
             Version.LoadVersion();
             BuildPlayerOptions = CreateBuildPlayerOptions();
-            
             Domain.ThrowIf(!BuildPlayerOptions.scenes.Any(), "There's no scene inlcuded in the build, ensure you have at least 1 scene in either ProjectSettings or passed argument");
 
             // Pre Build
@@ -89,16 +77,25 @@ namespace BonGames.EasyBuilder
             BuilderUtils.SetScriptingDefineSymbolsToActiveBuildTarget(BuildPlayerOptions.extraScriptingDefines);
 
             // Build DLC
-#if UNITY_ADDRESSABLE
+
             if (BuildArguments.IsDlcBuildEnable())
             {
                 string dlcDestination = BuildArguments.GetDlcDestination();
                 string profileName = BuildArguments.GetDlcProfileName("Remote") ?? string.Empty;
+                bool dlcBuildResult = false;
+                string report;
                 IDlcBuilder dlcBuilder = DlcBuilder.CreateBuilder(this.BuildTarget, this.Environment, profileName, dlcDestination);
-                bool dlcBuildResult = dlcBuilder.Build(out string report);
+                try
+                {
+                    dlcBuildResult = dlcBuilder.Build(out report);
+                }
+                catch (System.Exception e)
+                {
+                    dlcBuildResult = false;
+                    report = e.ToString();
+                }
                 BonGames.Tools.Domain.ThrowIf(!dlcBuildResult, $"Dlc build failed:\n{report}");
             }
-#endif
 
             // Player Build
             if (BuildArguments.IsPlayerBuildEnable())
@@ -280,7 +277,7 @@ namespace BonGames.EasyBuilder
                 defines.AddRange(PlatformSpecifiedSymbols);
             }
 
-            defines.AddRange(BuildArguments.GetAdditionalSymbols());            
+            defines.AddRange(BuildArguments.GetAdditionalSymbols());
 
             buildPlayerOptions.options = options;
             buildPlayerOptions.extraScriptingDefines = defines.ToArray();

@@ -2,45 +2,51 @@ namespace BonGames.EasyBuilder
 {
     using UnityEditor;
     using System.Collections.Generic;
-  using BonGames.Tools;
-  using BonGames.Tools.Enum;
+    using BonGames.Tools;
+    using BonGames.Tools.Enum;
 
-  public static class ProjectSwitcher
+    public static class ProjectSwitcher
     {
-        public static void ClearScriptingDefineSymbols()
+        public static bool SwitchTo(EAppTarget app, EEnvironment env, BuildTarget buildTarget)
         {
-            BuilderUtils.SetScriptingDefineSymbolsToActiveBuildTarget(new string[] { });
-        }
-
-        public static void SetEditorRunAsRemoteClient()
-        {
-            BuildPlayerOptions op = BuilderUtils.GetDefaultBuildPlayerOptions(EAppTarget.Client, EEnvironment.Staging);
-            BuilderUtils.SetScriptingDefineSymbolsToActiveBuildTarget(op.extraScriptingDefines);
-        }
-
-        public static void SetEditorRunAsLocalClient()
-        {
-            ClearScriptingDefineSymbols();
-        }
-
-        public static void SetEditorRunAsLocalServer()
-        {
-            BuildPlayerOptions op = BuilderUtils.GetDefaultBuildPlayerOptions(EAppTarget.Server, EEnvironment.Staging);            
-            List<string> defines = new List<string>(op.extraScriptingDefines);
-            for (int i = defines.Count - 1; i >= 0; i--)
+            bool switchRes = true;
+            try
             {
-                if (defines[i] == BuildDefines.EnableUnityMultiplayAgent ||
-                    defines[i] == BuildDefines.EnableHostingAgent)
+                BuildTargetGroup buildGroup = BuilderUtils.GetBuildTargetGroup(buildTarget);
+                if (buildGroup != BuilderUtils.GetActiveBuildTargetGroup() || buildTarget != BuilderUtils.GetActiveBuildTarget())
                 {
-                    defines.RemoveAt(i);
+                    EasyBuilder.LogI($"Switching build target to BuildGroup:{buildGroup} BuildTarget:{buildTarget}");
+                    switchRes = EditorUserBuildSettings.SwitchActiveBuildTarget(buildGroup, buildTarget);
+                }
+
+                if (BuilderUtils.IsStandalone(buildTarget))
+                {
+                    EditorUserBuildSettings.standaloneBuildSubtarget = app == EAppTarget.Server ? StandaloneBuildSubtarget.Server : StandaloneBuildSubtarget.Player;
                 }
             }
-            BuilderUtils.SetScriptingDefineSymbolsToActiveBuildTarget(defines.ToArray());
+            catch (System.Exception e)
+            {
+                switchRes = false;
+                Domain.LogE($"[ProjectSwitcher] SwitchTo {buildTarget} Error:\n{e}");
+            }
+            return switchRes;
         }
-    
-        public static void SetEditorRunAsOffline()
+
+        public static bool SetDefaultScriptSymbols(EAppTarget app, EEnvironment env)
         {
-            BuilderUtils.SetScriptingDefineSymbolsToActiveBuildTarget(new string[] { BuildDefines.OfflineGameMode });
+            bool setRes = true;
+            try
+            {
+                BuildPlayerOptions op = BuilderUtils.GetDefaultBuildPlayerOptions(app, env);
+                BuilderUtils.SetScriptingDefineSymbolsToActiveBuildTarget(op.extraScriptingDefines);
+                AssetDatabase.Refresh();
+            }
+            catch (System.Exception e)
+            {
+                setRes = false;
+                Domain.LogE($"[ProjectSwitcher] SetDefaultScriptSymbols Error:\n{e}");
+            }
+            return setRes;
         }
     }
 }
