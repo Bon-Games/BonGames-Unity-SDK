@@ -12,8 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 080c3aea2c4d0444494a3307ac8454f8, type: 3}
   m_Name: TestDatabase
   m_EditorClassIdentifier: 
-  _configurationJsons:
-  - "{\r\n  \"$type\": \"BonGames.UniConfigurator.TestRecordBase, BonGames.UniConfiguratior\"\r\n}"
-  - '{}'
-  - '{}'
-  - '{}'
+  _configurationJsons: []

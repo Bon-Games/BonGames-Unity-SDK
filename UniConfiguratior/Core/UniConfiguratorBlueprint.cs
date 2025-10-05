@@ -2,6 +2,6 @@ namespace BonGames.UniConfigurator
 {
     public interface IUniRecord
     {
-        public string GetId();
+        public string Guid { get; set; }
     }
 }

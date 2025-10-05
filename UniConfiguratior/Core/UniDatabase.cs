@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +13,15 @@ namespace BonGames.UniConfigurator
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings()
         {
             TypeNameHandling = TypeNameHandling.All,
+            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
             NullValueHandling = NullValueHandling.Include,
-            Formatting = Formatting.Indented
+            Formatting = Formatting.Indented,
         };
 
 
         [SerializeField, HideInInspector] private List<string> _configurationJsons = new();
 
-        private readonly List<T> _configurations = new();
-        public List<string> ConfigurationJsons => _configurationJsons;
-        
+        private readonly List<T> _configurations = new();     
 
 #if UNITY_EDITOR
         private bool _isDirty = false;
@@ -44,9 +44,9 @@ namespace BonGames.UniConfigurator
             return _configurationJsons[index];
         }
 
-        public IUniRecord GetConfigurationById(string id)
+        public T GetConfigurationById(string id)
         {
-            return _configurations.FirstOrDefault(it => it.GetId() == id);
+            return _configurations.FirstOrDefault(it => it.Guid == id);
         }
 
         public void OnAfterDeserialize()
@@ -101,7 +101,7 @@ namespace BonGames.UniConfigurator
             }
         }
 
-        public static string Serialize(T config)
+        public static string Serialize<U>(U config) where U : IUniRecord
         {
             return JsonConvert.SerializeObject(config, JsonSerializerSettings);
         }

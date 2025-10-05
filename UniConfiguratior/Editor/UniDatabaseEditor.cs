@@ -1,5 +1,4 @@
 using BonGames.Tools;
-using BonGames.UniConfigurator;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -22,10 +21,20 @@ namespace BonGames.UniConfigurator
             base.OnInspectorGUI();
 
             if (_target == null) return;
-
             GUILayout.BeginVertical();
 
-            GUILayout.Label("Configurations");
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Database");
+            if (GUILayout.Button("Reload Types"))
+            {
+                _typeFactory = new UniRecordTypes<T>();
+            }
+            if (GUILayout.Button("Clear"))
+            {
+                _target.Clear();
+            }
+            GUILayout.EndHorizontal();
+
             for (int i = 0; i < _target.Count; i++)
             {
                 DrawConfigJsonArea(i);
@@ -104,15 +113,14 @@ namespace BonGames.UniConfigurator
             if (GUILayout.Button("Duplicate"))
             {
                 JObject currentObject = JObject.Parse(_target.GetRawValue(index));
-                if (currentObject.SelectToken("UniqueId") != null)
+                if (currentObject.SelectToken(nameof(IUniRecord.Guid)) != null)
                 {
-                    currentObject["UniqueId"] = System.Guid.NewGuid().ToString();
+                    currentObject[nameof(IUniRecord.Guid)] = System.Guid.NewGuid().ToString();
                 }
                 string json2Duplicate = currentObject.ToString();
                 _target.Add(UniDatabase<T>.Deserialize(json2Duplicate));
                 _target.SetThisDirty();
             }
-
 
             GUILayout.EndHorizontal();
 
