@@ -1,11 +1,6 @@
 using BonGames.Tools;
-using BonGames.Tools.Enum;
-using Codice.Client.Common.ProcessTree;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
+using BonGames.EasyBuilder.Enum;
 using UnityEditor;
-using UnityEngine;
 
 namespace BonGames.EasyBuilder
 {

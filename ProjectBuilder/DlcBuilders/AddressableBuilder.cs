@@ -1,9 +1,5 @@
-using System.Linq;
-using System.Text;
 using UnityEditor;
-using System.Collections;
-using BonGames.Tools.Enum;
-using System.Collections.Generic;
+using BonGames.EasyBuilder.Enum;
 
 
 #if UNITY_ADDRESSABLE

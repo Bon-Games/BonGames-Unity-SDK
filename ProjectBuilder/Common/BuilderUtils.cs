@@ -5,9 +5,8 @@ namespace BonGames.EasyBuilder
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-    using BonGames.Tools;
-    using BonGames.Tools.Enum;
-    using System;
+    using BonGames.EasyBuilder.Enum;
+    using BonGames.EasyBuilder.Argument;
 
     public static class BuilderUtils
     {

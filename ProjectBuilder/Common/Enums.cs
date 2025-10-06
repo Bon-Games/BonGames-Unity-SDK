@@ -1,4 +1,4 @@
-namespace BonGames.Tools.Enum
+namespace BonGames.EasyBuilder.Enum
 {
     public enum EEnvironment
     {

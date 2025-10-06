@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using BonGames.Tools.Enum;
+using BonGames.EasyBuilder.Enum;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 

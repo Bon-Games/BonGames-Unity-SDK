@@ -1,3 +1,5 @@
+using BonGames.EasyBuilder.Argument;
+
 namespace BonGames.EasyBuilder
 {
     public class BuildVersion

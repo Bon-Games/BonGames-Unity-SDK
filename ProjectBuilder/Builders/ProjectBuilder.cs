@@ -2,9 +2,9 @@ using BonGames.Tools;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BonGames.Tools.Enum;
+using BonGames.EasyBuilder.Enum;
 using UnityEditor;
-using UnityEditor.Build;
+using BonGames.EasyBuilder.Argument;
 
 #if UNITY_ADDRESSABLE
 using UnityEditor.AddressableAssets;

@@ -1,9 +1,7 @@
 using System;
-using BonGames.Tools;
 using BonGames.CommandLine;
 
-
-namespace BonGames.EasyBuilder
+namespace BonGames.EasyBuilder.Argument
 {
     public static class BuildArguments
     {

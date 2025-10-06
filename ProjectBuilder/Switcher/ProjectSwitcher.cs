@@ -1,9 +1,8 @@
 namespace BonGames.EasyBuilder
 {
     using UnityEditor;
-    using System.Collections.Generic;
     using BonGames.Tools;
-    using BonGames.Tools.Enum;
+    using BonGames.EasyBuilder.Enum;
 
     public static class ProjectSwitcher
     {

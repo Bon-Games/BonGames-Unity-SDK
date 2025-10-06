@@ -2,14 +2,10 @@ namespace BonGames.EasyBuilder
 {
     using UnityEditor;
     using UnityEngine;
-    using BonGames.Tools;
     using System.Text;
-    using BonGames.Tools.Enum;
+    using BonGames.EasyBuilder.Enum;
+    using BonGames.EasyBuilder.Argument;
     using BonGames.CommandLine;
-#if UNITY_ADDRESSABLE
-    using UnityEditor.AddressableAssets;
-    using UnityEditor.AddressableAssets.Settings;
-#endif
 
   public static class EasyBuilder
     {
@@ -173,7 +169,7 @@ namespace BonGames.EasyBuilder
 
 
         [MenuItem(MenuRunTools + "/Dlc/Build For Active Target")]
-        public static void AddressableBuild()
+        public static void BuildDlc()
         {
             DlcBuilder.CreateBuilder(BuilderUtils.GetActiveBuildTarget(), EEnvironment.Development, "Local", null).Build(out _);
         }
