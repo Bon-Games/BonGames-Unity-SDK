@@ -12,4 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 080c3aea2c4d0444494a3307ac8454f8, type: 3}
   m_Name: TestDatabase
   m_EditorClassIdentifier: 
-  _configurationJsons: []
+  _configurationJsons:
+  - "{\r\n  \"$type\": \"BonGames.UniConfigurator.TestRecordBase, BonGames.UniConfigurator\",\r\n 
+    \"Guid\": \"66465d1b-a998-41b3-9443-e6cfe03e9dd7\"\r\n}"
+  - "{\r\n  \"$type\": \"BonGames.UniConfigurator.Skill, BonGames.UniConfigurator\",\r\n 
+    \"Level\": 0,\r\n  \"Guid\": null\r\n}"
