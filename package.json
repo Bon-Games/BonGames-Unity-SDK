@@ -1,20 +1,21 @@
 {
-	"name": "com.bon-games.easy-builder",
-	"version": "0.0.1",
-	"displayName": "Easy Builder",
-	"description": "Unity Project Builder which supports batch mode to integrate CIDI.",
-	"unity": "2018.3",
-    "dependencies": {
-    	"com.unity.nuget.newtonsoft-json": "3.2.1"
-    },
-	"keywords": [
-        "Jenkins",
-        "Pipeline",
-        "CI/CD",
-		"Builder"],
-	"author": {
-		"name": "Bon Games",
-		"email": "reigh.nguyen@gmail.com",
-        "url": "https://github.com/Bon-Games"
-	}
+  "name": "com.bon-games.tools",
+  "version": "0.0.1",
+  "displayName": "BonGames Tools",
+  "description": "Unity Project Builder which supports batch mode to integrate CIDI.",
+  "unity": "2018.3",  
+  "keywords": [
+    "Jenkins",
+    "Pipeline",
+    "CI/CD",
+    "Builder"
+  ],
+  "author": {
+    "name": "Bon Games",
+    "email": "reigh.nguyen@gmail.com",
+    "url": "https://github.com/Bon-Games"
+  },
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  }
 }

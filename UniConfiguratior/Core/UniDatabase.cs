@@ -22,12 +22,19 @@ namespace BonGames.UniConfigurator
         [SerializeField, HideInInspector] private List<string> _configurationJsons = new();
 
         private readonly List<T> _configurations = new();     
+        public int Count => _configurations.Count;
 
 #if UNITY_EDITOR
         private bool _isDirty = false;
-        public bool IsDirty => _isDirty || UnityEditor.EditorUtility.IsDirty(this);        
+        
+        public bool IsDirty => _isDirty || UnityEditor.EditorUtility.IsDirty(this);
+
+        public void SetThisDirty()
+        {
+            _isDirty = true;
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
 #endif
-        public int Count => _configurations.Count;
 
         public T this[int index]
         {
@@ -79,14 +86,6 @@ namespace BonGames.UniConfigurator
         protected virtual void OnSerialized() { }
         
         protected virtual void OnDeserialized() { }
-
-#if UNITY_EDITOR
-        public void SetThisDirty()
-        {
-            _isDirty = true;
-            UnityEditor.EditorUtility.SetDirty(this);
-        }
-#endif
 
         public static T Deserialize(string json)
         {
