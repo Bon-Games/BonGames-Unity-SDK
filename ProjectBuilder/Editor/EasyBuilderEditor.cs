@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using BonGames.CommandLine;
 using BonGames.EasyBuilder.Argument;
 using BonGames.EasyBuilder.Enum;
@@ -241,3 +242,4 @@ namespace BonGames.EasyBuilder
         }
     }
 }
+#endif

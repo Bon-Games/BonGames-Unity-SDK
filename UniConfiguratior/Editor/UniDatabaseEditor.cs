@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using BonGames.Tools;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
@@ -153,3 +154,4 @@ namespace BonGames.UniConfigurator
         }
     }
 }
+#endif
