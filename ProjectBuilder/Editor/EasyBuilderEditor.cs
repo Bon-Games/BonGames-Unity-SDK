@@ -16,25 +16,6 @@ namespace BonGames.EasyBuilder
     {
         public void DrawGUI();
     }
-    public class Cache
-    {
-        private readonly Dictionary<string, object> _caches = new();
-        public Cache() { }
-
-        public T Get<T>(string key)
-        {
-            if (_caches.ContainsKey(key))
-            {
-                return (T)_caches[key];
-            }
-            return default;
-        }
-
-        public void Set(string key, object toCache)
-        {
-            _caches[key] = toCache;
-        }
-    }
 
     public class BuildProfileCreator : IPage
     {
@@ -53,9 +34,7 @@ namespace BonGames.EasyBuilder
            nameof(BuildArguments.Key.GitRevision),
            nameof(BuildArguments.Key.GitBranch),
         };
-        private readonly Cache _caches;
-
-        private string _profilePath;        
+        private string _profilePath;
         private EEnvironment _environment;
         private Dictionary<string, string> _tempParams;
         public BuildProfileCreator()
@@ -65,13 +44,12 @@ namespace BonGames.EasyBuilder
             _params2Declares = ArgumentsExpander.GetDefinedArguments().ToDictionary(it => it.Value, it => it.Key);
 
             _profilePath = GetDefaultProfilePath();
-            _caches = new();
-            _caches.Set(nameof(_profilePath), _profilePath);
             LoadProfile(_profilePath);
         }
 
         public void DrawGUI()
         {
+            EditorGUI.BeginChangeCheck();
             GUILayout.BeginHorizontal();
             GUILayout.Label("Profile", GUILayout.Width(LabelWidth));
             GUI.enabled = false;
@@ -80,7 +58,7 @@ namespace BonGames.EasyBuilder
             if (GUILayout.Button("Load Profile", GUILayout.Width(LabelWidth)))
             {
                 string selected = EditorUtility.OpenFilePanel("Profile", BuilderUtils.BuildProfileDirectory(), "args*");
-                if (!string.IsNullOrEmpty(selected)) 
+                if (!string.IsNullOrEmpty(selected))
                 {
                     _profilePath = selected;
                     LoadProfile(_profilePath);
@@ -88,22 +66,18 @@ namespace BonGames.EasyBuilder
             }
             GUILayout.EndHorizontal();
 
-            if (_profilePath.Equals(_caches.Get<string>(nameof(_profilePath))))
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Environment", GUILayout.Width(LabelWidth));
+            _environment = (EEnvironment)EditorGUILayout.EnumPopup(_environment);
+            GUILayout.EndHorizontal();
+
+            if (EditorGUI.EndChangeCheck())
             {
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Environment", GUILayout.Width(LabelWidth));
-                _caches.Set(nameof(EEnvironment), _environment);
-                _environment = (EEnvironment)EditorGUILayout.EnumPopup(_environment);
-                if (_caches.Get<EEnvironment>(nameof(EEnvironment)) != _environment)
-                {
-                    _definedParams[nameof(BuildArguments.Key.BuildEnvironment)] = $"{_environment}";
-                    _profilePath = GetDefaultProfilePath();
-                    LoadProfile(_profilePath);
-                    _caches.Set(nameof(_profilePath), _profilePath);
-                }
-                GUILayout.EndHorizontal();
+                _profilePath = GetDefaultProfilePath();
+                LoadProfile(_profilePath);
             }
 
+            EditorGUI.BeginChangeCheck();
             foreach (string key in _definedParams.Keys)
             {
                 if (_ignoreParams.Contains(key)) continue;
@@ -114,11 +88,14 @@ namespace BonGames.EasyBuilder
                 GUILayout.EndHorizontal();
             }
 
-            foreach (string key in _tempParams.Keys)
+            if (EditorGUI.EndChangeCheck())
             {
-                if (_tempParams[key] != _definedParams[key])
+                foreach (string key in _tempParams.Keys)
                 {
-                    _definedParams[key] = _tempParams[key];
+                    if (_tempParams[key] != _definedParams[key])
+                    {
+                        _definedParams[key] = _tempParams[key];
+                    }
                 }
             }
 
@@ -126,7 +103,7 @@ namespace BonGames.EasyBuilder
             {
                 StringBuilder content = new();
                 foreach (KeyValuePair<string, string> pair in _params2Declares)
-                {   
+                {
                     if (_definedParams.ContainsKey(pair.Value))
                     {
                         content.AppendLine($"{pair.Key}={_definedParams[pair.Value]}");
@@ -146,7 +123,7 @@ namespace BonGames.EasyBuilder
             if (!File.Exists(profilePath)) return false;
 
             Dictionary<string, string> loaded = ArgumentsResolver.LoadArguments(_profilePath);
-            foreach (KeyValuePair<string, string> pair in loaded) 
+            foreach (KeyValuePair<string, string> pair in loaded)
             {
                 if (_params2Declares.ContainsKey(pair.Key))
                 {
@@ -166,17 +143,22 @@ namespace BonGames.EasyBuilder
         private EAppTarget _appTarget = EAppTarget.Client;
         private EEnvironment _environment = EEnvironment.Development;
         private BuildTarget _buildTarget = BuildTarget.Android;
-        public PlayerBuilder() { }
+        private string _activeBuildProfile = null;
+        public PlayerBuilder()
+        {
+            _activeBuildProfile = BuilderUtils.GetActiveBuildProfileFilePath(_environment);
+        }
 
         public void DrawGUI()
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label("Profile", GUILayout.Width(LabelWidth));
             GUI.enabled = false;
-            GUILayout.TextField(BuilderUtils.GetActiveBuildProfileFilePath(_environment), GUILayout.MinWidth(400));
+            GUILayout.TextField(_activeBuildProfile, GUILayout.MinWidth(400));
             GUI.enabled = true;
             GUILayout.EndHorizontal();
 
+            EditorGUI.BeginChangeCheck();
             GUILayout.BeginHorizontal();
             GUILayout.Label("App Target", GUILayout.Width(LabelWidth));
             _appTarget = (EAppTarget)EditorGUILayout.EnumPopup(_appTarget);
@@ -191,7 +173,11 @@ namespace BonGames.EasyBuilder
             GUILayout.Label("Build Target", GUILayout.Width(LabelWidth));
             _buildTarget = (BuildTarget)EditorGUILayout.EnumPopup(_buildTarget);
             GUILayout.EndHorizontal();
-
+            if (EditorGUI.EndChangeCheck())
+            {
+                _activeBuildProfile = BuilderUtils.GetActiveBuildProfileFilePath(_environment);
+            }
+            
             if (GUILayout.Button("Build", GUILayout.Width(LabelWidth)))
             {
                 EasyBuilder.Build(_appTarget, _environment, _buildTarget);
