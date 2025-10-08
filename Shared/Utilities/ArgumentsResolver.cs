@@ -20,6 +20,12 @@ namespace BonGames.CommandLine
             Print();
         }
 
+        public static void Load(string profilePath)
+        {
+            s_startupArguments = GetCommandlineArgs(profilePath);
+            Print();
+        }
+
         public static void Print()
         {
             StringBuilder logger = new();
@@ -34,7 +40,7 @@ namespace BonGames.CommandLine
             Domain.LogI($"{logger}");
         }
 
-        public static Dictionary<string, string> GetCommandlineArgs()
+        public static Dictionary<string, string> GetCommandlineArgs(string defaultProfile = null)
         {
             Dictionary<string, string> argDictionary = new();
 
@@ -57,7 +63,7 @@ namespace BonGames.CommandLine
 
             // Fill out default arguments if they do not exist
             BonGames.Tools.Domain.LogW($"Attemp to load default arguments");
-            Dictionary<string, string> defaultArgs = LoadDefaultArguments();
+            Dictionary<string, string> defaultArgs = string.IsNullOrEmpty(defaultProfile) ? LoadDefaultArguments() : LoadArguments(defaultProfile);
             foreach (KeyValuePair<string, string> it in defaultArgs)
             {
                 string key = it.Key;
@@ -99,9 +105,8 @@ namespace BonGames.CommandLine
             return System.IO.Path.Combine(UnityEngine.Application.dataPath, "../.args.default");
         }
 
-        private static Dictionary<string, string> LoadDefaultArguments()
+        public static Dictionary<string, string>  LoadArguments(string filePath)
         {
-            string filePath = DefaultArgumentsFilePath();
             Dictionary<string, string> res = new();
             if (System.IO.File.Exists(filePath))
             {
@@ -120,6 +125,11 @@ namespace BonGames.CommandLine
                 BonGames.Tools.Domain.LogW($"Default args does not exist at {filePath}");
             }
             return res;
+        }
+
+        private static Dictionary<string, string> LoadDefaultArguments()
+        {
+            return LoadArguments(DefaultArgumentsFilePath());
         }
     }
 }

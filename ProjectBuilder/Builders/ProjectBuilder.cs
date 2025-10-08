@@ -51,10 +51,24 @@ namespace BonGames.EasyBuilder
 
         public UnityEditor.Build.Reporting.BuildReport Build()
         {
-            Prepare();
-            BonGames.CommandLine.ArgumentsResolver.Load();
             // Switch to build target
-            ProjectSwitcher.SwitchTo(AppTarget, Environment, BuildTarget);
+            if (!ProjectSwitcher.SwitchTo(AppTarget, Environment, BuildTarget))
+            {
+                BonGames.Tools.Domain.ThrowIf(true, $"Failed to switch AppTarget:{AppTarget} BuildTarget:{BuildTarget} Environment:{Environment}");
+            }
+
+            Prepare();
+            string buildProfileFilePath = BuilderUtils.GetBuildProfileFilePath(Environment);
+            if (!UnityEngine.Application.isBatchMode && !string.IsNullOrEmpty(buildProfileFilePath))
+            {
+                // Uses .args.[Environment] as default
+                BonGames.CommandLine.ArgumentsResolver.Load(buildProfileFilePath);
+            }
+            else
+            {
+                // Uses .args.default as default
+                BonGames.CommandLine.ArgumentsResolver.Load();
+            }
 
             // Create build options
             Version.LoadVersion();

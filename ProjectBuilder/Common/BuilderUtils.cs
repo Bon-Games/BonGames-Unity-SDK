@@ -243,6 +243,21 @@ namespace BonGames.EasyBuilder
             return System.IO.Path.Combine(UnityEngine.Application.dataPath, "../", "BuildCache");
         }
 
+        public static string BuildProfileDirectory()
+        {
+            string dir = System.IO.Path.Combine(BuildInformationDirectory(), "BuildProfiles");
+            if (!System.IO.Directory.Exists(dir))
+            {
+                System.IO.Directory.CreateDirectory(dir);
+            }
+            return dir;
+        }
+
+        public static string GetBuildProfileFilePath(EEnvironment env)
+        {
+            return System.IO.Path.Combine(BuildProfileDirectory(), $".args.{env}");
+        }
+
         public static List<string> GetDefaultScriptSymbols(EAppTarget appTarget, BuildTarget buildTarget, EEnvironment buildEnv)
         {
             NamedBuildTarget namedBuildTarget = BuilderUtils.GetNamedBuildTarget(appTarget, buildTarget);
