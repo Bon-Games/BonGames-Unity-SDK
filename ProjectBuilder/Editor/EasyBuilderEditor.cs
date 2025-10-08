@@ -2,7 +2,6 @@ using BonGames.CommandLine;
 using BonGames.EasyBuilder.Argument;
 using BonGames.EasyBuilder.Enum;
 using BonGames.Tools;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +12,10 @@ using UnityEngine;
 
 namespace BonGames.EasyBuilder
 {
+    public interface IPage
+    {
+        public void DrawGUI();
+    }
     public class Cache
     {
         private readonly Dictionary<string, object> _caches = new();
@@ -22,7 +25,7 @@ namespace BonGames.EasyBuilder
         {
             if (_caches.ContainsKey(key))
             {
-                return (T) _caches[key];
+                return (T)_caches[key];
             }
             return default;
         }
@@ -33,7 +36,7 @@ namespace BonGames.EasyBuilder
         }
     }
 
-    public class BuildParameterCreator
+    public class BuildProfileCreator : IPage
     {
         private const uint LabelWidth = 220;
 
@@ -46,6 +49,7 @@ namespace BonGames.EasyBuilder
            nameof(BuildArguments.Key.BuildAppTarget),
            nameof(BuildArguments.Key.BuildEnvironment),
            nameof(BuildArguments.Key.BuildPlatformTarget),
+           nameof(BuildArguments.Key.BuildVersionString),
            nameof(BuildArguments.Key.GitRevision),
            nameof(BuildArguments.Key.GitBranch),
         };
@@ -54,20 +58,19 @@ namespace BonGames.EasyBuilder
         private string _profilePath;        
         private EEnvironment _environment;
         private Dictionary<string, string> _tempParams;
-
-        public BuildParameterCreator()
+        public BuildProfileCreator()
         {
             _tempParams = new();
             _definedParams = ArgumentsExpander.GetDefinedArguments().ToDictionary(it => it.Key, it => string.Empty);
             _params2Declares = ArgumentsExpander.GetDefinedArguments().ToDictionary(it => it.Value, it => it.Key);
-            
+
             _profilePath = GetDefaultProfilePath();
             _caches = new();
             _caches.Set(nameof(_profilePath), _profilePath);
             LoadProfile(_profilePath);
         }
 
-        public void OnGUI()
+        public void DrawGUI()
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label("Profile", GUILayout.Width(LabelWidth));
@@ -156,12 +159,56 @@ namespace BonGames.EasyBuilder
         }
     }
 
+    public class PlayerBuilder : IPage
+    {
+        private const uint LabelWidth = 220;
+
+        private EAppTarget _appTarget = EAppTarget.Client;
+        private EEnvironment _environment = EEnvironment.Development;
+        private BuildTarget _buildTarget = BuildTarget.Android;
+        public PlayerBuilder() { }
+
+        public void DrawGUI()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Profile", GUILayout.Width(LabelWidth));
+            GUI.enabled = false;
+            GUILayout.TextField(BuilderUtils.GetActiveBuildProfileFilePath(_environment), GUILayout.MinWidth(400));
+            GUI.enabled = true;
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("App Target", GUILayout.Width(LabelWidth));
+            _appTarget = (EAppTarget)EditorGUILayout.EnumPopup(_appTarget);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Environment", GUILayout.Width(LabelWidth));
+            _environment = (EEnvironment)EditorGUILayout.EnumPopup(_environment);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Build Target", GUILayout.Width(LabelWidth));
+            _buildTarget = (BuildTarget)EditorGUILayout.EnumPopup(_buildTarget);
+            GUILayout.EndHorizontal();
+
+            if (GUILayout.Button("Build", GUILayout.Width(LabelWidth)))
+            {
+                EasyBuilder.Build(_appTarget, _environment, _buildTarget);
+            }
+        }
+    }
+
     public class EasyBuilderEditor : EditorWindow
     {
-        private string _text = "Enter your text here...";
-        private Vector2 _scrollPosition = Vector2.zero;
+        enum Page
+        {
+            Builder = 0,
+            BuildProfileCreator = 1,
+        }
+        private Page _page;
         private bool _isInited = false;
-        private BuildParameterCreator _page;
+        private Dictionary<Page, IPage> _pages;
 
 
 
@@ -182,7 +229,11 @@ namespace BonGames.EasyBuilder
         {
             if (_isInited) return;
 
-            _page = new();
+            _pages = new()
+            {
+                { Page.Builder, new PlayerBuilder() },
+                { Page.BuildProfileCreator, new BuildProfileCreator() },
+            };
         }
 
         private void OnGUI()
@@ -191,10 +242,14 @@ namespace BonGames.EasyBuilder
             EditorGUILayout.Space();
 
             GUILayout.BeginVertical();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Tab: ", GUILayout.Width(220));
+            _page = (Page)EditorGUILayout.EnumPopup(_page);
+            GUILayout.EndHorizontal();
 
-            if (_page != null)
+            if (_pages.TryGetValue(_page, out IPage p) && p != null)
             {
-                _page.OnGUI();
+                p.DrawGUI();
             }
             GUILayout.EndVertical();
         }

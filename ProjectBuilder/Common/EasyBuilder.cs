@@ -7,7 +7,7 @@ namespace BonGames.EasyBuilder
     using BonGames.EasyBuilder.Argument;
     using BonGames.CommandLine;
 
-  public static class EasyBuilder
+    public static class EasyBuilder
     {
         public const string Tag = "[" + nameof(EasyBuilder) + "]";
         public const string MenuParent = "BonGames";
@@ -192,6 +192,22 @@ namespace BonGames.EasyBuilder
                 if (!System.Enum.TryParse<BuildTarget>(ArgumentsResolver.GetEnvironmentArgument(BuildArguments.Key.BuildPlatformTarget), true, out BuildTarget buildTarget))
                     throw new System.Exception($"Build Platform Target is invalid with value {ArgumentsResolver.GetEnvironmentArgument(BuildArguments.Key.BuildPlatformTarget)}");
 
+                isSuccess = Build(appTarget, env, buildTarget);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Build Failed with Exception\n{e}");
+                EditorApplication.Exit(1);
+            }
+
+            EditorApplication.Exit(isSuccess ? 0 : 1);
+        }
+
+        public static bool Build(EAppTarget appTarget, EEnvironment env, BuildTarget buildTarget)
+        {
+            bool isSuccess = false;
+            try
+            {
                 // If report is Null, then Player Build was intended to be ignored
                 // So ONLY error could be arised in that case is Dlc building process which would throw an exception if an error occurs, then the catch block would be invoke
                 UnityEditor.Build.Reporting.BuildReport report = ProjectBuilder.CreateBuilder(appTarget, buildTarget, env).Build();
@@ -222,10 +238,9 @@ namespace BonGames.EasyBuilder
             catch (System.Exception e)
             {
                 Debug.LogError($"Build Failed with Exception\n{e}");
-                EditorApplication.Exit(1);
+                isSuccess = false;
             }
-            
-            EditorApplication.Exit(isSuccess ? 0 : 1);
+            return isSuccess;
         }
     }
 }

@@ -6,12 +6,6 @@ using BonGames.EasyBuilder.Enum;
 using UnityEditor;
 using BonGames.EasyBuilder.Argument;
 
-#if UNITY_ADDRESSABLE
-using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Build;
-using UnityEditor.AddressableAssets.Settings;
-#endif
-
 namespace BonGames.EasyBuilder
 {
     public abstract partial class ProjectBuilder : IProjectBuilder
@@ -58,21 +52,21 @@ namespace BonGames.EasyBuilder
             }
 
             Prepare();
-            string buildProfileFilePath = BuilderUtils.GetBuildProfileFilePath(Environment);
-            if (!UnityEngine.Application.isBatchMode && !string.IsNullOrEmpty(buildProfileFilePath))
+            string buildProfileFilePath = null;
+            if (!UnityEngine.Application.isBatchMode)
             {
-                // Uses .args.[Environment] as default
-                BonGames.CommandLine.ArgumentsResolver.Load(buildProfileFilePath);
+                // In Editor mode, Uses .args.[Environment] as default
+                buildProfileFilePath = BuilderUtils.GetActiveBuildProfileFilePath(Environment);
             }
-            else
-            {
-                // Uses .args.default as default
-                BonGames.CommandLine.ArgumentsResolver.Load();
-            }
-
+            BonGames.CommandLine.ArgumentsResolver.Load(buildProfileFilePath);
+            
             // Create build options
             Version.LoadVersion();
             BuildPlayerOptions = CreateBuildPlayerOptions();
+
+            // Clean up current symbols, set editor symbols to match the build target
+            BuilderUtils.SetScriptingDefineSymbolsToActiveBuildTarget(BuildPlayerOptions.extraScriptingDefines);
+
             Domain.ThrowIf(!BuildPlayerOptions.scenes.Any(), "There's no scene inlcuded in the build, ensure you have at least 1 scene in either ProjectSettings or passed argument");
 
             // Pre Build
@@ -86,9 +80,6 @@ namespace BonGames.EasyBuilder
 
             // Behide the scene informations
             SetupInternally();
-
-            // Clean up current symbols, use buildPlayerOptions.extraScriptingDefines for testing or does not really create an impact            
-            BuilderUtils.SetScriptingDefineSymbolsToActiveBuildTarget(BuildPlayerOptions.extraScriptingDefines);
 
             // Build DLC
 

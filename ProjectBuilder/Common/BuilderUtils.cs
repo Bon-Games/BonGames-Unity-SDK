@@ -7,8 +7,9 @@ namespace BonGames.EasyBuilder
     using System.Reflection;
     using BonGames.EasyBuilder.Enum;
     using BonGames.EasyBuilder.Argument;
+  using BonGames.CommandLine;
 
-    public static class BuilderUtils
+  public static class BuilderUtils
     {
         private const string Tag = "[" + nameof(BuilderUtils) + "]";
 
@@ -253,9 +254,14 @@ namespace BonGames.EasyBuilder
             return dir;
         }
 
-        public static string GetBuildProfileFilePath(EEnvironment env)
+        public static string GetActiveBuildProfileFilePath(EEnvironment env)
         {
-            return System.IO.Path.Combine(BuildProfileDirectory(), $".args.{env}");
+            string envBasedFile = System.IO.Path.Combine(BuildProfileDirectory(), $".args.{env}");
+            if (System.IO.File.Exists(envBasedFile))
+            {
+                return envBasedFile;
+            }
+            return ArgumentsResolver.DefaultArgumentsFilePath();
         }
 
         public static List<string> GetDefaultScriptSymbols(EAppTarget appTarget, BuildTarget buildTarget, EEnvironment buildEnv)

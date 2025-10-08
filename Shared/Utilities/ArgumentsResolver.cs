@@ -63,7 +63,8 @@ namespace BonGames.CommandLine
 
             // Fill out default arguments if they do not exist
             BonGames.Tools.Domain.LogW($"Attemp to load default arguments");
-            Dictionary<string, string> defaultArgs = string.IsNullOrEmpty(defaultProfile) ? LoadDefaultArguments() : LoadArguments(defaultProfile);
+            Dictionary<string, string> defaultArgs = string.IsNullOrEmpty(defaultProfile) || !System.IO.File.Exists(defaultProfile)
+                ? LoadDefaultArguments() : LoadArguments(defaultProfile);
             foreach (KeyValuePair<string, string> it in defaultArgs)
             {
                 string key = it.Key;
@@ -100,9 +101,9 @@ namespace BonGames.CommandLine
             return null;
         }
 
-        private static string DefaultArgumentsFilePath()
+        public static string DefaultArgumentsFilePath()
         {
-            return System.IO.Path.Combine(UnityEngine.Application.dataPath, "../.args.default");
+            return System.IO.Path.Combine(UnityEngine.Application.dataPath, "..", ".args.default");
         }
 
         public static Dictionary<string, string>  LoadArguments(string filePath)

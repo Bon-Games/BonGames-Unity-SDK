@@ -17,3 +17,5 @@ MonoBehaviour:
     \"Guid\": \"66465d1b-a998-41b3-9443-e6cfe03e9dd7\"\r\n}"
   - "{\r\n  \"$type\": \"BonGames.UniConfigurator.Skill, BonGames.UniConfigurator\",\r\n 
     \"Level\": 0,\r\n  \"Guid\": null\r\n}"
+  - "{\n  \"$type\": \"BonGames.UniConfigurator.Weapon, BonGames.UniConfigurator\",\n 
+    \"Name\": \"Weapon\",\n  \"Guid\": null\n}"

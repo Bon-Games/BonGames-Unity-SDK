@@ -3,6 +3,7 @@ namespace BonGames.EasyBuilder
 {
     using UnityEditor;
     using UnityEditor.Build.Reporting;
+    using BonGames.EasyBuilder.Enum;
 
     public class IL2CppPreprocessBuild : IPreProcessBuildWithReportTask
     {
