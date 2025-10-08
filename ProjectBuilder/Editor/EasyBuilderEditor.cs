@@ -178,10 +178,11 @@ namespace BonGames.EasyBuilder
             {
                 _activeBuildProfile = BuilderUtils.GetActiveBuildProfileFilePath(_environment);
             }
-            
+
             if (GUILayout.Button("Build", GUILayout.Width(LabelWidth)))
             {
                 EasyBuilder.Build(_appTarget, _environment, _buildTarget);
+                GUIUtility.ExitGUI();
             }
         }
     }
