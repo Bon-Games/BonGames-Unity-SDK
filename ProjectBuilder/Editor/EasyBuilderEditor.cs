@@ -76,8 +76,12 @@ namespace BonGames.EasyBuilder
             GUI.enabled = true;
             if (GUILayout.Button("Load Profile", GUILayout.Width(LabelWidth)))
             {
-                _profilePath = EditorUtility.OpenFilePanel("Profile", BuilderUtils.BuildProfileDirectory(), "args*");
-                LoadProfile(_profilePath);
+                string selected = EditorUtility.OpenFilePanel("Profile", BuilderUtils.BuildProfileDirectory(), "args*");
+                if (!string.IsNullOrEmpty(selected)) 
+                {
+                    _profilePath = selected;
+                    LoadProfile(_profilePath);
+                }
             }
             GUILayout.EndHorizontal();
 
