@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -90,6 +91,7 @@ namespace BonGames.EasyBuilder
                 {
                     _definedParams[nameof(BuildArguments.Key.BuildEnvironment)] = $"{_environment}";
                     _profilePath = GetDefaultProfilePath();
+                    LoadProfile(_profilePath);
                     _caches.Set(nameof(_profilePath), _profilePath);
                 }
                 GUILayout.EndHorizontal();
@@ -113,6 +115,18 @@ namespace BonGames.EasyBuilder
                 }
             }
 
+            if (GUILayout.Button("Save", GUILayout.Width(LabelWidth)))
+            {
+                StringBuilder content = new();
+                foreach (KeyValuePair<string, string> pair in _params2Declares)
+                {   
+                    if (_definedParams.ContainsKey(pair.Value))
+                    {
+                        content.AppendLine($"{pair.Key}={_definedParams[pair.Value]}");
+                    }
+                }
+                File.WriteAllText(_profilePath, content.ToString());
+            }
         }
 
         private string GetDefaultProfilePath()
