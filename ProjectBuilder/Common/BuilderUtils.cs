@@ -120,7 +120,7 @@ namespace BonGames.EasyBuilder
 
         public static string GetRootBuiltFolder()
         {
-            string rootFolder = System.IO.Path.Combine(UnityEngine.Application.dataPath, "../Build");
+            string rootFolder = System.IO.Path.Combine(UnityEngine.Application.dataPath, "..", "Build");
             return rootFolder;
         }
 
@@ -231,7 +231,7 @@ namespace BonGames.EasyBuilder
 
         public static string BuildInformationDirectory()
         {
-            string dir = System.IO.Path.Combine(UnityEngine.Application.dataPath, "../", "BuildInformation");
+            string dir = System.IO.Path.Combine(UnityEngine.Application.dataPath, "..", "BuildInformation");
             if (!System.IO.Directory.Exists(dir))
             {
                 System.IO.Directory.CreateDirectory(dir);
@@ -241,7 +241,7 @@ namespace BonGames.EasyBuilder
 
         public static string BuildCacheDirectory()
         {
-            return System.IO.Path.Combine(UnityEngine.Application.dataPath, "../", "BuildCache");
+            return System.IO.Path.Combine(UnityEngine.Application.dataPath, "..", "BuildCache");
         }
 
         public static string BuildProfileDirectory()
@@ -256,7 +256,7 @@ namespace BonGames.EasyBuilder
 
         public static string GetActiveBuildProfileFilePath(EEnvironment env)
         {
-            string envBasedFile = System.IO.Path.Combine(BuildProfileDirectory(), $".args.{env}");
+            string envBasedFile = System.IO.Path.Combine(BuildProfileDirectory(), $".args.{env}".ToLower());
             if (System.IO.File.Exists(envBasedFile))
             {
                 return envBasedFile;
