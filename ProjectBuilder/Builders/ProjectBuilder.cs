@@ -59,14 +59,13 @@ namespace BonGames.EasyBuilder
                 buildProfileFilePath = BuilderUtils.GetActiveBuildProfileFilePath(Environment);
             }
             BonGames.CommandLine.ArgumentsResolver.Load(buildProfileFilePath);
-            
+
+            // Clean up current symbols, set editor symbols to match the build target
+            ProjectSwitcher.SetScriptSymbolsTo(AppTarget, Environment);
+
             // Create build options
             Version.LoadVersion();
             BuildPlayerOptions = CreateBuildPlayerOptions();
-
-            // Clean up current symbols, set editor symbols to match the build target
-            BuilderUtils.SetScriptingDefineSymbolsToActiveBuildTarget(BuildPlayerOptions.extraScriptingDefines);
-
             Domain.ThrowIf(!BuildPlayerOptions.scenes.Any(), "There's no scene inlcuded in the build, ensure you have at least 1 scene in either ProjectSettings or passed argument");
 
             // Pre Build
