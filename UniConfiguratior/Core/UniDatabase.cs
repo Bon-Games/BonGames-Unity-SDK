@@ -1,9 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using UnityEngine;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace BonGames.UniConfigurator
 {
@@ -65,7 +63,7 @@ namespace BonGames.UniConfigurator
                 if (config == null) continue;
                 _configurations.Add(config);
             }
-            Debug.Log($"Deserialize there's {_configurations.Count} item(s)");
+            // Debug.Log($"Deserialize there's {_configurations.Count} item(s)");
             OnDeserialized();
         }
 
@@ -79,7 +77,7 @@ namespace BonGames.UniConfigurator
             {
                 _configurationJsons.Add(Serialize(_configurations[i]));
             }
-            Debug.Log($"Serialize there's {_configurationJsons.Count} item(s)");
+            // Debug.Log($"Serialize there's {_configurationJsons.Count} item(s)");
             OnSerialized();
         }
 

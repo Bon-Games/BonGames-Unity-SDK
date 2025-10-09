@@ -10,14 +10,6 @@ namespace BonGames.EasyBuilder
 {
     public abstract partial class ProjectBuilder : IProjectBuilder
     {
-        public virtual IPreProcessBuildWithReportPreset PreProcessBuildWithReport { get; protected set; }
-
-        public virtual IPostProcessBuildWithReportPreset PostProcessingWithReport { get; protected set; }
-
-        public virtual IPreBuildProcess PreBuildProcess { get; protected set; }
-
-        public virtual IPostBuildProcess PostBuildProcess { get; protected set; }
-
         public EAppTarget AppTarget { get; private set; }
 
         public BuildTarget BuildTarget { get; private set; }
@@ -69,11 +61,13 @@ namespace BonGames.EasyBuilder
             Domain.ThrowIf(!BuildPlayerOptions.scenes.Any(), "There's no scene inlcuded in the build, ensure you have at least 1 scene in either ProjectSettings or passed argument");
 
             // Pre Build
-            if (PreBuildProcess != null)
+            PreBuildProcessors preProcessors = BuilderUtils.GetPreProcessors(Environment);
+            if (preProcessors != null)
             {
-                PreBuildProcess.OnPreBuild(this);
+                preProcessors.Execute(this);
             }
-
+            EasyBuilder.LogI("Test " + preProcessors);
+            return default;
             // Setup general product info
             SetProductInformation();
 
@@ -81,7 +75,6 @@ namespace BonGames.EasyBuilder
             SetupInternally();
 
             // Build DLC
-
             if (BuildArguments.IsDlcBuildEnable())
             {
                 string dlcDestination = BuildArguments.GetDlcDestination();
@@ -109,9 +102,10 @@ namespace BonGames.EasyBuilder
                 if (report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
                 {
                     // Post Build
-                    if (PostBuildProcess != null)
+                    PostBuildProcessors postProcessors = BuilderUtils.GetPostProcessors(Environment);
+                    if (postProcessors != null)
                     {
-                        PostBuildProcess.OnPostBuild(this);
+                        postProcessors.Execute(report, this);
                     }
                 }
                 else
@@ -128,10 +122,7 @@ namespace BonGames.EasyBuilder
 
         protected virtual void Prepare()
         {
-            PreProcessBuildWithReport = new DefaultPreProcessBuildWithReportPreset();
-            PreProcessBuildWithReport.Tasks.Add(new IL2CppPreprocessBuild());
 
-            PostProcessingWithReport = new DefaultPostProcessBuildWithReportPreset();
         }
         protected void SetProductInformation()
         {
@@ -252,15 +243,5 @@ namespace BonGames.EasyBuilder
             }
             return activeScenes.ToArray();
         }
-    }
-
-    internal class DefaultPreProcessBuildWithReportPreset : IPreProcessBuildWithReportPreset
-    {
-        public List<IPreProcessBuildWithReportTask> Tasks { get; private set; } = new();
-    }
-
-    internal class DefaultPostProcessBuildWithReportPreset : IPostProcessBuildWithReportPreset
-    {
-        public List<IPostProcessBuildWithReportTask> Tasks { get; private set; } = new();
     }
 }

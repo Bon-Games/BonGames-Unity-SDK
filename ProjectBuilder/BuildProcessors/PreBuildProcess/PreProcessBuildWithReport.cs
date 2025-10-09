@@ -15,15 +15,7 @@ namespace BonGames.EasyBuilder
 
             if (activeBuilder == null) return;
 
-            EasyBuilder.LogI($"{Tag} Preprocessing build with report ...");
-            
-            if (activeBuilder.PreProcessBuildWithReport == null) return;
-
-            for (int i = 0; i < activeBuilder.PreProcessBuildWithReport.Tasks.Count; i++)
-            {
-                IPreProcessBuildWithReportTask processor = activeBuilder.PreProcessBuildWithReport.Tasks[i];
-                processor.OnPreprocessBuild(report);
-            }
+            EasyBuilder.LogI($"{Tag} Pre Processing build with report ...");    
         }
     }
 }

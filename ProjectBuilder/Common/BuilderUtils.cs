@@ -8,8 +8,9 @@ namespace BonGames.EasyBuilder
     using BonGames.EasyBuilder.Enum;
     using BonGames.EasyBuilder.Argument;
   using BonGames.CommandLine;
+  using System;
 
-  public static class BuilderUtils
+    public static class BuilderUtils
     {
         private const string Tag = "[" + nameof(BuilderUtils) + "]";
 
@@ -329,7 +330,7 @@ namespace BonGames.EasyBuilder
                     defines.Add(symbol);
                 }
             }
-            
+
             return defines;
         }
 
@@ -337,7 +338,7 @@ namespace BonGames.EasyBuilder
         {
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
             BuildOptions options = BuildOptions.None;
-            List<string> defines = GetDefaultScriptSymbols(appTarget, GetActiveBuildTarget(), buildEnv);   
+            List<string> defines = GetDefaultScriptSymbols(appTarget, GetActiveBuildTarget(), buildEnv);
             buildPlayerOptions.options = options;
             buildPlayerOptions.extraScriptingDefines = defines.ToArray();
             return buildPlayerOptions;
@@ -376,6 +377,38 @@ namespace BonGames.EasyBuilder
         {
             string nameWithtouExtension = BuildArguments.GetOutputFileName();
             return string.IsNullOrEmpty(nameWithtouExtension) ? defValue : nameWithtouExtension;
+        }
+
+        public static PostBuildProcessors GetPostProcessors(EEnvironment env)
+        {
+            string typeName = nameof(PostBuildProcessors);
+            string[] processors = AssetDatabase.FindAssets($"t:{typeName}");
+            string match = processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)).ToLower() == $"{env}{typeName}".ToLower());
+            if (string.IsNullOrEmpty(match))
+            {
+                match = processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)).ToLower() == typeName.ToLower());
+            }
+            if (!string.IsNullOrEmpty(match))
+            {
+                return AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(match), typeof(PostBuildProcessors)) as PostBuildProcessors;
+            }
+            return null;
+        }
+
+        public static PreBuildProcessors GetPreProcessors(EEnvironment env)
+        {
+            string typeName = nameof(PreBuildProcessors);
+            string[] processors = AssetDatabase.FindAssets($"t:{typeName}");
+            string match = processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)).ToLower() == $"{env}{typeName}".ToLower());
+            if (string.IsNullOrEmpty(match))
+            {
+                match = processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)).ToLower() == typeName.ToLower());
+            }
+            if (!string.IsNullOrEmpty(match))
+            {
+                return AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(match), typeof(PreBuildProcessors)) as PreBuildProcessors;
+            }
+            return null;
         }
     }
 }

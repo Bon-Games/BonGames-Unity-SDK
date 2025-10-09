@@ -64,7 +64,7 @@ namespace BonGames.EasyBuilder
                 {
                     symbols.AddRange(addSymbols.Split(';'));
                 }
-                Domain.LogE($"[ProjectSwitcher] Set Script Symbols To:\n{string.Join(";", symbols)}");
+                Domain.LogI($"[ProjectSwitcher] Set Script Symbols To:\n{string.Join(";", symbols)}");
                 BuilderUtils.SetScriptingDefineSymbolsToActiveBuildTarget(symbols.ToArray());
                 AssetDatabase.Refresh();
             }
