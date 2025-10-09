@@ -167,11 +167,9 @@ namespace BonGames.EasyBuilder
             ProjectBuilder.CreateBuilder(EAppTarget.Server, BuildTarget.StandaloneOSX, EEnvironment.Staging).Build();
         }
 
-
-        [MenuItem(MenuRunTools + "/Dlc/Build For Active Target")]
-        public static void BuildDlc()
+        public static void BuildDlc(BuildTarget target, EEnvironment env, string profile)
         {
-            DlcBuilder.CreateBuilder(BuilderUtils.GetActiveBuildTarget(), EEnvironment.Development, "Local", null).Build(out _);
+            DlcBuilder.CreateBuilder(target, env, profile, null).Build(out _);
         }
 
         public static void Build()

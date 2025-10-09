@@ -1,13 +1,5 @@
 #if UNITY_EDITOR
-using BonGames.CommandLine;
-using BonGames.EasyBuilder.Argument;
-using BonGames.EasyBuilder.Enum;
-using BonGames.Tools;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,8 +9,9 @@ namespace BonGames.EasyBuilder
     {
         enum EWindow
         {
-            Builder = 0,
-            BuildProfileCreator = 1,
+            AppBuilder = 0,
+            DlcBuilder = 1,
+            BuildProfileCreator = 2,
         }
         [MenuItem("BonGames/Easy Builder Editor")]
         public static void ShowWindow()
@@ -42,7 +35,8 @@ namespace BonGames.EasyBuilder
             {
                 _pages = new()
                 {
-                    { EWindow.Builder, new PlayerBuilderWindow() },
+                    { EWindow.AppBuilder, new PlayerBuilderWindow() },
+                    { EWindow.DlcBuilder, new DlcBuilderWindow() },
                     { EWindow.BuildProfileCreator, new BuildProfileCreatorWindow() },
                 };
             }
