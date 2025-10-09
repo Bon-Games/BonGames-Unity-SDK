@@ -25,6 +25,8 @@ namespace BonGames.EasyBuilder.Argument
             public const string ScenePaths          = "-scenes";
             public const string AdditionalSymbols   = "-symbols";
             public const string ReleaseAlias        = "-releaseAlias";
+            public const string PreProcessorsBuild  = "-preProcessorsBuild";
+            public const string PostProcessorsBuild = "-postProcessorsBuild";
 
             // Android specified
             public const string KeystorePath        = "-ks";
@@ -119,5 +121,7 @@ namespace BonGames.EasyBuilder.Argument
         public static string GetGitRevision() => ArgumentsResolver.GetEnvironmentArgument(Key.GitRevision);
         public static string GetGitBranch() => ArgumentsResolver.GetEnvironmentArgument(Key.GitBranch);
         public static string GetOutputFileName() => ArgumentsExpander.ExpandArguments(ArgumentsResolver.GetEnvironmentArgument(Key.OutputFileName));
+        public static string GetPreProcessorsBuild() => ArgumentsResolver.GetEnvironmentArgument(Key.PreProcessorsBuild);
+        public static string GetPostProcessorsBuild() => ArgumentsResolver.GetEnvironmentArgument(Key.PostProcessorsBuild);
     }
 }

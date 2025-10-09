@@ -379,11 +379,15 @@ namespace BonGames.EasyBuilder
             return string.IsNullOrEmpty(nameWithtouExtension) ? defValue : nameWithtouExtension;
         }
 
-        public static PostBuildProcessors GetPostProcessors(EEnvironment env)
+        public static PostBuildProcessors GetPostProcessors(string name, EEnvironment env)
         {
             string typeName = nameof(PostBuildProcessors);
             string[] processors = AssetDatabase.FindAssets($"t:{typeName}");
-            string match = processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)).ToLower() == $"{env}{typeName}".ToLower());
+            string match = string.IsNullOrEmpty(name) ? null : processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)) == name);
+            if (string.IsNullOrEmpty(match))
+            { 
+                match = processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)).ToLower() == $"{env}{typeName}".ToLower());
+            }
             if (string.IsNullOrEmpty(match))
             {
                 match = processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)).ToLower() == typeName.ToLower());
@@ -395,15 +399,22 @@ namespace BonGames.EasyBuilder
             return null;
         }
 
-        public static PreBuildProcessors GetPreProcessors(EEnvironment env)
+        public static PreBuildProcessors GetPreProcessors(string name, EEnvironment env)
         {
             string typeName = nameof(PreBuildProcessors);
             string[] processors = AssetDatabase.FindAssets($"t:{typeName}");
-            string match = processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)).ToLower() == $"{env}{typeName}".ToLower());
+
+            string match = string.IsNullOrEmpty(name) ? null : processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)) == name);
+            if (string.IsNullOrEmpty(match))
+            {
+                match = processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)).ToLower() == $"{env}{typeName}".ToLower());
+            }
+
             if (string.IsNullOrEmpty(match))
             {
                 match = processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)).ToLower() == typeName.ToLower());
             }
+
             if (!string.IsNullOrEmpty(match))
             {
                 return AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(match), typeof(PreBuildProcessors)) as PreBuildProcessors;

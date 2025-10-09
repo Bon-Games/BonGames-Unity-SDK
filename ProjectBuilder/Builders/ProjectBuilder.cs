@@ -61,13 +61,12 @@ namespace BonGames.EasyBuilder
             Domain.ThrowIf(!BuildPlayerOptions.scenes.Any(), "There's no scene inlcuded in the build, ensure you have at least 1 scene in either ProjectSettings or passed argument");
 
             // Pre Build
-            PreBuildProcessors preProcessors = BuilderUtils.GetPreProcessors(Environment);
+            PreBuildProcessors preProcessors = BuilderUtils.GetPreProcessors(BuildArguments.GetPreProcessorsBuild(), Environment);
             if (preProcessors != null)
             {
                 preProcessors.Execute(this);
             }
-            EasyBuilder.LogI("Test " + preProcessors);
-            return default;
+
             // Setup general product info
             SetProductInformation();
 
@@ -102,7 +101,7 @@ namespace BonGames.EasyBuilder
                 if (report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
                 {
                     // Post Build
-                    PostBuildProcessors postProcessors = BuilderUtils.GetPostProcessors(Environment);
+                    PostBuildProcessors postProcessors = BuilderUtils.GetPostProcessors(BuildArguments.GetPostProcessorsBuild(), Environment);
                     if (postProcessors != null)
                     {
                         postProcessors.Execute(report, this);
