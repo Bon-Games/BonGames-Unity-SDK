@@ -1,4 +1,4 @@
-#define UNITY_ADDRESSABLE
+// #define UNITY_ADDRESSABLE
 
 using BonGames.EasyBuilder.Enum;
 using BonGames.Shared;
