@@ -168,8 +168,8 @@ namespace BonGames.EasyBuilder
         protected virtual BuildPlayerOptions CreateBuildPlayerOptions()
         {
             string buildLocation = BuildArguments.GetBuildDestination();
-            string nonMobileChildFolder = !BuilderUtils.IsMobile(BuildTarget) ? BuildArguments.GetOutputArchiveName() : null;
-            buildLocation = !string.IsNullOrEmpty(buildLocation) ? buildLocation : BuilderUtils.GetPlatformBuildFolder(BuildTarget, AppTarget, nonMobileChildFolder);           
+            string nonMobileChildFolder = !BuilderUtils.IsMobile(BuildTarget) ? GetOutputArchiveName() : null;
+            buildLocation = !string.IsNullOrEmpty(buildLocation) ? buildLocation : BuilderUtils.GetPlatformBuildFolder(BuildTarget, AppTarget, nonMobileChildFolder);
 
             BuildPlayerOptions buildPlayerOptions = GetDefaultBuildPlayerOptions();
             buildPlayerOptions.locationPathName = Path.Combine(buildLocation, BuildFileName());
@@ -189,24 +189,38 @@ namespace BonGames.EasyBuilder
 
         private string BuildFileName()
         {
-            string outputFileName = string.IsNullOrEmpty(BuildArguments.GetProductNameCode()) ? BuilderUtils.GetProductName() : BuildArguments.GetProductNameCode();
             if (BuilderUtils.IsMobile(BuildTarget))
             {
                 // [ExpandedName].[apk,ipa]
-                outputFileName = $"{outputFileName}-{Environment.Shorten()}-{Version.BundleVersion}({Version.Build})";
+                string outputFileName = GetOutputArchiveName();
                 return $"{BuilderUtils.GetOutputArchiveName(outputFileName)}{BuilderUtils.GetBuildTargetAppExtension(BuildTarget, Environment)}";
             }
             else
             {
                 // [ProductName].[exe,x84_64,ect]
-                return $"{outputFileName}{BuilderUtils.GetBuildTargetAppExtension(BuildTarget, Environment)}";
+                string productName = string.IsNullOrEmpty(BuildArguments.GetProductNameCode()) ? BuilderUtils.GetProductName() : BuildArguments.GetProductNameCode();
+                return $"{productName}{BuilderUtils.GetBuildTargetAppExtension(BuildTarget, Environment)}";
             }
+        }
+
+        private string GetOutputArchiveName()
+        {
+            string outputFileName = string.IsNullOrEmpty(BuildArguments.GetProductNameCode()) ? BuilderUtils.GetProductName() : BuildArguments.GetProductNameCode();
+            if (BuilderUtils.IsMobile(BuildTarget))
+            {
+                outputFileName = $"{outputFileName}-{Environment.Shorten()}-{Version.BundleVersion}({Version.Build})";
+            }
+            else
+            {
+                outputFileName = $"{outputFileName}-{Environment.Shorten()}-{Version.BundleVersion}";
+            }
+            return BuilderUtils.GetOutputArchiveName(outputFileName);
         }
 
         public BuildPlayerOptions GetDefaultBuildPlayerOptions()
         {
             BuildPlayerOptions buildPlayerOptions = BuilderUtils.GetDefaultBuildPlayerOptions(AppTarget, Environment);
-            
+
             List<string> symbols = new List<string>(buildPlayerOptions.extraScriptingDefines);
             if (PlatformSpecifiedSymbols != null && PlatformSpecifiedSymbols.Count > 0)
             {
