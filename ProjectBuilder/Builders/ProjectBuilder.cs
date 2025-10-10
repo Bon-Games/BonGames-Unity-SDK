@@ -149,19 +149,6 @@ namespace BonGames.EasyBuilder
             string product = BuildArguments.GetProductName();
             if (!string.IsNullOrEmpty(product))
             {
-                switch (Environment)
-                {
-                    case EEnvironment.Debug:
-                    case EEnvironment.Development:
-                        product = $"{product} (Dev)";
-                        break;
-                    case EEnvironment.Staging:
-                        product = $"{product} (Stag)";
-                        break;
-                    case EEnvironment.Release:
-                    case EEnvironment.Distribution:
-                        break;
-                }
                 PlayerSettings.productName = product;
             }
 

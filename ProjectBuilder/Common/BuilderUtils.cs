@@ -141,26 +141,7 @@ namespace BonGames.EasyBuilder
                     throw new System.Exception($"The app tartget {appTarget} is not supported");
             }
 
-            switch (platformTarget)
-            {
-                case BuildTarget.Android:
-                    outPath = System.IO.Path.Combine(outPath, "android");
-                    break;
-                case BuildTarget.iOS:
-                    outPath = System.IO.Path.Combine(outPath, "iOS");
-                    break;
-                case BuildTarget.StandaloneWindows64:
-                    outPath = System.IO.Path.Combine(outPath, "windows64");
-                    break;
-                case BuildTarget.StandaloneOSX:
-                    outPath = System.IO.Path.Combine(outPath, "osx-intel64");
-                    break;
-                case BuildTarget.StandaloneLinux64:
-                    outPath = System.IO.Path.Combine(outPath, "linux64");
-                    break;
-                default: throw new System.Exception($"The target built folder is not supported yet target:{platformTarget}");
-            }
-
+            outPath = System.IO.Path.Combine(outPath, $"{platformTarget}");            
             return outPath;
         }
 
