@@ -3,13 +3,16 @@ using UnityEngine;
 
 namespace BonGames.Shared
 {
-    public static class EditorStyles
+    public static class EditorCustomStyles
     {
         
     }
 
     public static class EditorUISize
     {
+        public static readonly GUILayoutOption ExpandWidth  = GUILayout.ExpandWidth(true);
+        public static readonly GUILayoutOption ExpandHeight = GUILayout.ExpandHeight(true);
+
         public static class S
         {
             public static readonly GUILayoutOption MaxButtonWidth               = GUILayout.MaxWidth(180);

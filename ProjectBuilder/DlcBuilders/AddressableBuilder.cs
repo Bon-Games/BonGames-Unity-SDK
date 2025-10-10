@@ -1,5 +1,10 @@
+// #define UNITY_ADDRESSABLE
+
 using UnityEditor;
+using System.Text;
+using System.Linq;
 using BonGames.EasyBuilder.Enum;
+using System.Collections.Generic;
 
 
 #if UNITY_ADDRESSABLE
@@ -19,7 +24,7 @@ namespace BonGames.EasyBuilder
 #if !UNITY_ADDRESSABLE
             throw new System.Exception("Addressable is disabled");
 #else
-            AddressableAssetSettingsDefaultObject.Settings.BuildAddressablesWithPlayerBuild = PlayerBuildOption.DoNotBuildWithPlayer;
+            AddressableAssetSettingsDefaultObject.Settings.BuildAddressablesWithPlayerBuild = PlayerBuildOption.BuildWithPlayer;
 #endif
         }
 

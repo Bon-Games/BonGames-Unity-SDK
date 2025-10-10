@@ -45,13 +45,13 @@ namespace BonGames.EasyBuilder
             GUILayout.BeginHorizontal();
             EditorGUI.BeginDisabledGroup(true);
             GUILayout.Label(EditorContents.TextBuildProfile, EditorUISize.S.MaxLabelWidth);
-            GUILayout.TextField(_profilePath, EditorUISize.S.MinOnelineInputWidth, GUILayout.ExpandWidth(true));            
+            GUILayout.TextField(_profilePath, EditorUISize.S.MinOnelineInputWidth, EditorUISize.ExpandWidth);            
             GUILayout.EndHorizontal();
             EditorGUI.EndDisabledGroup();
 
             GUILayout.BeginHorizontal();
             GUILayout.Label(EditorContents.TextBuildEnvironment , EditorUISize.S.MaxButtonWidth);
-            _environment = (EEnvironment)EditorGUILayout.EnumPopup(_environment);
+            _environment = (EEnvironment)EditorGUILayout.EnumPopup(_environment, EditorUISize.S.MaxButtonWidth);
             GUILayout.EndHorizontal();
 
             if (EditorGUI.EndChangeCheck())
@@ -70,7 +70,7 @@ namespace BonGames.EasyBuilder
                 {
                     _definedParams.Add(key, string.Empty);
                 }
-                _definedParams[key] = GUILayout.TextField(_definedParams[key], EditorUISize.S.MinOnelineInputWidth);
+                _definedParams[key] = GUILayout.TextField(_definedParams[key], EditorUISize.S.MinOnelineInputWidth, Shared.EditorUISize.ExpandWidth);
                 GUILayout.EndHorizontal();
             }
 

@@ -22,24 +22,24 @@ namespace BonGames.EasyBuilder
             EditorGUI.BeginDisabledGroup(true);
             GUILayout.BeginHorizontal();
             GUILayout.Label(EditorContents.TextBuildProfile, Shared.EditorUISize.S.MaxLabelWidth);
-            GUILayout.TextField(_activeBuildProfile, Shared.EditorUISize.S.MinOnelineInputWidth);
+            GUILayout.TextField(_activeBuildProfile, Shared.EditorUISize.S.MinOnelineInputWidth, Shared.EditorUISize.ExpandWidth);
             GUILayout.EndHorizontal();
             EditorGUI.EndDisabledGroup();
 
             EditorGUI.BeginChangeCheck();
             GUILayout.BeginHorizontal();
             GUILayout.Label(EditorContents.TextAppTarget, Shared.EditorUISize.S.MaxLabelWidth);
-            _appTarget = (EAppTarget)EditorGUILayout.EnumPopup(_appTarget);
+            _appTarget = (EAppTarget)EditorGUILayout.EnumPopup(_appTarget, EditorUISize.S.MaxButtonWidth);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Label(EditorContents.TextBuildEnvironment, Shared.EditorUISize.S.MaxLabelWidth);
-            _environment = (EEnvironment)EditorGUILayout.EnumPopup(_environment);
+            _environment = (EEnvironment)EditorGUILayout.EnumPopup(_environment, EditorUISize.S.MaxButtonWidth);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Label(EditorContents.TextBuildTarget, Shared.EditorUISize.S.MaxLabelWidth);
-            _buildTarget = (BuildTarget)EditorGUILayout.EnumPopup(_buildTarget);
+            _buildTarget = (BuildTarget)EditorGUILayout.EnumPopup(_buildTarget, EditorUISize.S.MaxButtonWidth);
             GUILayout.EndHorizontal();
             if (EditorGUI.EndChangeCheck())
             {

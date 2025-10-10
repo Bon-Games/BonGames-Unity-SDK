@@ -53,7 +53,7 @@ namespace BonGames.EasyBuilder
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
             GUILayout.Label(EditorContents.TextTab, EditorUISize.S.MaxLabelWidth);
-            _activeWindow = (EWindow)EditorGUILayout.EnumPopup(_activeWindow);
+            _activeWindow = (EWindow)EditorGUILayout.EnumPopup(_activeWindow, EditorUISize.S.MaxButtonWidth);
             GUILayout.EndHorizontal();
 
             if (_pages != null && _pages.TryGetValue(_activeWindow, out IEditorWindow p) && p != null)
