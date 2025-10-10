@@ -7,8 +7,8 @@ namespace BonGames.EasyBuilder
     using System.Reflection;
     using BonGames.EasyBuilder.Enum;
     using BonGames.EasyBuilder.Argument;
-  using BonGames.CommandLine;
-  using System;
+    using BonGames.CommandLine;
+    using System;
 
     public static class BuilderUtils
     {
@@ -89,6 +89,17 @@ namespace BonGames.EasyBuilder
             return buildTargetName.StartsWith("Standalone");
         }
 
+        public static bool IsMobile(BuildTarget buildTarget)
+        {
+            switch (buildTarget)
+            {
+                case BuildTarget.iOS:
+                case BuildTarget.Android:
+                    return true;
+            }
+            return false;
+        }
+
         public static EAppTarget GetActiveAppTarget()
         {
             bool isStandalone = IsStandalone(EditorUserBuildSettings.activeBuildTarget);
@@ -125,7 +136,7 @@ namespace BonGames.EasyBuilder
             return rootFolder;
         }
 
-        public static string GetPlatformBuildFolder(BuildTarget platformTarget, EAppTarget appTarget)
+        public static string GetPlatformBuildFolder(BuildTarget platformTarget, EAppTarget appTarget, string childFolder = null)
         {
             string root = GetRootBuiltFolder();
             string outPath = null;
@@ -140,8 +151,14 @@ namespace BonGames.EasyBuilder
                 default:
                     throw new System.Exception($"The app tartget {appTarget} is not supported");
             }
-
-            outPath = System.IO.Path.Combine(outPath, $"{platformTarget}");            
+            if (string.IsNullOrEmpty(childFolder))
+            {
+                outPath = System.IO.Path.Combine(outPath, $"{platformTarget}");
+            }
+            else
+            {
+                outPath = System.IO.Path.Combine(outPath, childFolder, $"{platformTarget}");
+            }
             return outPath;
         }
 
@@ -354,9 +371,9 @@ namespace BonGames.EasyBuilder
             }
         }
 
-        public static string GetOutputFileName(string defValue)
+        public static string GetOutputArchiveName(string defValue)
         {
-            string nameWithtouExtension = BuildArguments.GetOutputFileName();
+            string nameWithtouExtension = BuildArguments.GetOutputArchiveName();
             return string.IsNullOrEmpty(nameWithtouExtension) ? defValue : nameWithtouExtension;
         }
 
@@ -366,7 +383,7 @@ namespace BonGames.EasyBuilder
             string[] processors = AssetDatabase.FindAssets($"t:{typeName}");
             string match = string.IsNullOrEmpty(name) ? null : processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)) == name);
             if (string.IsNullOrEmpty(match))
-            { 
+            {
                 match = processors.FirstOrDefault(p => System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(p)).ToLower() == $"{env}{typeName}".ToLower());
             }
             if (string.IsNullOrEmpty(match))

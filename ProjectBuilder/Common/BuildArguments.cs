@@ -11,7 +11,7 @@ namespace BonGames.EasyBuilder.Argument
             public const string BuildDestination    = "-buildDestination"; // Build folder
             public const string BuildApp            = "-buildApp";
             public const string CI                  = "-ci"; // True if the build is trigged from Jenkins or a build pipline
-            public const string OutputFileName      = "-outputFileName"; // Eg: [ProductCode]-[BuildEnvironment]-[BuildVersionString]-([BuildNumber])
+            public const string OutputArchiveName   = "-outputArchiveName"; // Eg: [ProductCode]-[BuildEnvironment]-[BuildVersionString]-([BuildNumber])
 
             // Build Arguments
             public const string BuildAppTarget      = "-buildAppTarget";
@@ -120,7 +120,7 @@ namespace BonGames.EasyBuilder.Argument
         }
         public static string GetGitRevision() => ArgumentsResolver.GetEnvironmentArgument(Key.GitRevision);
         public static string GetGitBranch() => ArgumentsResolver.GetEnvironmentArgument(Key.GitBranch);
-        public static string GetOutputFileName() => ArgumentsExpander.ExpandArguments(ArgumentsResolver.GetEnvironmentArgument(Key.OutputFileName));
+        public static string GetOutputArchiveName() => ArgumentsExpander.ExpandArguments(ArgumentsResolver.GetEnvironmentArgument(Key.OutputArchiveName));
         public static string GetPreProcessorsBuild() => ArgumentsResolver.GetEnvironmentArgument(Key.PreProcessorsBuild);
         public static string GetPostProcessorsBuild() => ArgumentsResolver.GetEnvironmentArgument(Key.PostProcessorsBuild);
     }

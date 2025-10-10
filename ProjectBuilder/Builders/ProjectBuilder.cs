@@ -167,7 +167,10 @@ namespace BonGames.EasyBuilder
 
         protected virtual BuildPlayerOptions CreateBuildPlayerOptions()
         {
-            string buildLocation = string.IsNullOrEmpty(BuildArguments.GetBuildDestination()) ? BuilderUtils.GetPlatformBuildFolder(BuildTarget, AppTarget) : BuildArguments.GetBuildDestination();
+            string buildLocation = BuildArguments.GetBuildDestination();
+            string nonMobileChildFolder = !BuilderUtils.IsMobile(BuildTarget) ? BuildArguments.GetOutputArchiveName() : null;
+            buildLocation = !string.IsNullOrEmpty(buildLocation) ? buildLocation : BuilderUtils.GetPlatformBuildFolder(BuildTarget, AppTarget, nonMobileChildFolder);           
+
             BuildPlayerOptions buildPlayerOptions = GetDefaultBuildPlayerOptions();
             buildPlayerOptions.locationPathName = Path.Combine(buildLocation, BuildFileName());
             buildPlayerOptions.targetGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
@@ -187,8 +190,17 @@ namespace BonGames.EasyBuilder
         private string BuildFileName()
         {
             string outputFileName = string.IsNullOrEmpty(BuildArguments.GetProductNameCode()) ? BuilderUtils.GetProductName() : BuildArguments.GetProductNameCode();
-            outputFileName = $"{outputFileName}-{Environment.Shorten()}-{Version.BundleVersion}({Version.Build})";
-            return $"{BuilderUtils.GetOutputFileName(outputFileName)}{BuilderUtils.GetBuildTargetAppExtension(BuildTarget, Environment)}";
+            if (BuilderUtils.IsMobile(BuildTarget))
+            {
+                // [ExpandedName].[apk,ipa]
+                outputFileName = $"{outputFileName}-{Environment.Shorten()}-{Version.BundleVersion}({Version.Build})";
+                return $"{BuilderUtils.GetOutputArchiveName(outputFileName)}{BuilderUtils.GetBuildTargetAppExtension(BuildTarget, Environment)}";
+            }
+            else
+            {
+                // [ProductName].[exe,x84_64,ect]
+                return $"{outputFileName}{BuilderUtils.GetBuildTargetAppExtension(BuildTarget, Environment)}";
+            }
         }
 
         public BuildPlayerOptions GetDefaultBuildPlayerOptions()
