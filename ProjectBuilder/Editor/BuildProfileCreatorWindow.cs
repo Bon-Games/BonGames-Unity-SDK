@@ -30,6 +30,7 @@ namespace BonGames.EasyBuilder
         
         private string _profilePath;
         private EEnvironment _environment;
+        private bool _doesProfileExist;
 
         public BuildProfileCreatorWindow()
         {
@@ -43,11 +44,15 @@ namespace BonGames.EasyBuilder
         {
             EditorGUI.BeginChangeCheck();
             GUILayout.BeginHorizontal();
-            EditorGUI.BeginDisabledGroup(true);
             GUILayout.Label(EditorContents.TextBuildProfile, EditorUISize.S.MaxLabelWidth);
-            GUILayout.TextField(_profilePath, EditorUISize.S.MinOnelineInputWidth, EditorUISize.ExpandWidth);            
-            GUILayout.EndHorizontal();
+            EditorGUI.BeginDisabledGroup(true);
+            GUILayout.TextField(_profilePath, EditorUISize.S.MinOnelineInputWidth, EditorUISize.ExpandWidth);
             EditorGUI.EndDisabledGroup();
+            if (!_doesProfileExist)
+            {
+                GUILayout.Label(EditorContents.IconDoesntExistWarning, EditorCustomStyles.Warning, Shared.EditorUISize.S.Icon);
+            }
+            GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Label(EditorContents.TextBuildEnvironment , EditorUISize.S.MaxButtonWidth);
@@ -85,6 +90,7 @@ namespace BonGames.EasyBuilder
                     }
                 }
                 File.WriteAllText(_profilePath, content.ToString());
+                ReloadBuildProfile();
             }
         }
 
@@ -114,6 +120,7 @@ namespace BonGames.EasyBuilder
         private void ReloadBuildProfile()
         {
             _profilePath = GetDefaultProfilePath();
+            _doesProfileExist = System.IO.File.Exists(_profilePath);
             LoadProfile(_profilePath);
         }
     }

@@ -1,11 +1,22 @@
 #if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
 namespace BonGames.Shared
 {
     public static class EditorCustomStyles
     {
-        
+        public static readonly GUIStyle Error = new GUIStyle(EditorStyles.label) 
+        { 
+            normal  = new GUIStyleState() { textColor = Color.red }, 
+            hover   = new GUIStyleState() { textColor = Color.red }
+        };
+
+        public static readonly GUIStyle Warning = new GUIStyle(EditorStyles.label)
+        {
+            normal  = new GUIStyleState() { textColor = Color.yellow },
+            hover   = new GUIStyleState() { textColor = Color.yellow }
+        };
     }
 
     public static class EditorUISize
@@ -18,6 +29,7 @@ namespace BonGames.Shared
             public static readonly GUILayoutOption MaxButtonWidth               = GUILayout.MaxWidth(180);
             public static readonly GUILayoutOption MaxLabelWidth                = GUILayout.MaxWidth(180);
             public static readonly GUILayoutOption MinOnelineInputWidth         = GUILayout.MaxWidth(400);
+            public static readonly GUILayoutOption[] Icon                       = new GUILayoutOption[] { GUILayout.Height(20), GUILayout.Width(20) };
         }
     }
 
@@ -36,6 +48,9 @@ namespace BonGames.Shared
         public static readonly GUIContent TextBuildEnvironment  = new GUIContent("Environment", "Build Environment");
         public static readonly GUIContent TextBuildTarget       = new GUIContent("Build Target", "The build target platform");
         public static readonly GUIContent TextAppTarget         = new GUIContent("App Target", "Either Client or Server");
+
+        public static readonly GUIContent IconDoesntExistWarning  = new GUIContent("\u26A0", "Doesn't exist");
+
     }
 }
 #endif

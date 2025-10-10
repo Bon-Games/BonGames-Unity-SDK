@@ -11,20 +11,26 @@ namespace BonGames.EasyBuilder
         private EEnvironment _environment = EEnvironment.Development;
         private BuildTarget _buildTarget = BuildTarget.Android;
         private string _activeBuildProfile = null;
+        private bool _doesProfileExist = false;
         
         public PlayerBuilderWindow()
         {
             _activeBuildProfile = BuilderUtils.GetActiveBuildProfileFilePath(_environment);
+            _doesProfileExist = System.IO.File.Exists(_activeBuildProfile);
         }
 
         public void DrawGUI(IEasyBuilderEditor parent)
         {
-            EditorGUI.BeginDisabledGroup(true);
             GUILayout.BeginHorizontal();
             GUILayout.Label(EditorContents.TextBuildProfile, Shared.EditorUISize.S.MaxLabelWidth);
+            EditorGUI.BeginDisabledGroup(true);
             GUILayout.TextField(_activeBuildProfile, Shared.EditorUISize.S.MinOnelineInputWidth, Shared.EditorUISize.ExpandWidth);
-            GUILayout.EndHorizontal();
             EditorGUI.EndDisabledGroup();
+            if (!_doesProfileExist)
+            {
+                GUILayout.Label(EditorContents.IconDoesntExistWarning, EditorCustomStyles.Warning, Shared.EditorUISize.S.Icon);
+            }
+            GUILayout.EndHorizontal();
 
             EditorGUI.BeginChangeCheck();
             GUILayout.BeginHorizontal();
@@ -44,6 +50,7 @@ namespace BonGames.EasyBuilder
             if (EditorGUI.EndChangeCheck())
             {
                 _activeBuildProfile = BuilderUtils.GetActiveBuildProfileFilePath(_environment);
+                _doesProfileExist = System.IO.File.Exists(_activeBuildProfile);
             }
             GUILayout.BeginHorizontal();
 
