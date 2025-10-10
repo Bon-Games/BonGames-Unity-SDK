@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using BonGames.Shared;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -28,6 +29,7 @@ namespace BonGames.EasyBuilder
 
         private EWindow _activeWindow;
         private Dictionary<EWindow, IEditorWindow> _pages;
+        private Vector2 _scrollPosition = Vector2.zero;
 
         private void InitializeWindow()
         {
@@ -47,9 +49,10 @@ namespace BonGames.EasyBuilder
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
+            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Tab: ", GUILayout.MaxWidth(220));
+            GUILayout.Label(EditorContents.TextTab, EditorUISize.S.MaxLabelWidth);
             _activeWindow = (EWindow)EditorGUILayout.EnumPopup(_activeWindow);
             GUILayout.EndHorizontal();
 
@@ -58,6 +61,7 @@ namespace BonGames.EasyBuilder
                 p.DrawGUI(this);
             }
             GUILayout.EndVertical();
+            EditorGUILayout.EndScrollView();
         }
     }
 }

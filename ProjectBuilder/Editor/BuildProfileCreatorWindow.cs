@@ -1,6 +1,7 @@
 using BonGames.CommandLine;
 using BonGames.EasyBuilder.Argument;
 using BonGames.EasyBuilder.Enum;
+using BonGames.Shared;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -13,8 +14,6 @@ namespace BonGames.EasyBuilder
 {
     public class BuildProfileCreatorWindow : IEditorWindow
     {
-        private const uint LabelWidth = 220;
-
         private readonly Dictionary<string, string> _definedParams;
         private readonly Dictionary<string, string> _params2Declares;
         private readonly List<string> _ignoreParams = new List<string>()
@@ -28,72 +27,54 @@ namespace BonGames.EasyBuilder
            nameof(BuildArguments.Key.GitRevision),
            nameof(BuildArguments.Key.GitBranch),
         };
+        
         private string _profilePath;
         private EEnvironment _environment;
-        private Dictionary<string, string> _tempParams;
+
         public BuildProfileCreatorWindow()
         {
-            _tempParams = new();
             _definedParams = ArgumentsExpander.GetDefinedArguments().ToDictionary(it => it.Key, it => string.Empty);
             _params2Declares = ArgumentsExpander.GetDefinedArguments().ToDictionary(it => it.Value, it => it.Key);
 
-            _profilePath = GetDefaultProfilePath();
-            LoadProfile(_profilePath);
+            ReloadBuildProfile();
         }
 
         public void DrawGUI(IEasyBuilderEditor parent)
         {
             EditorGUI.BeginChangeCheck();
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Profile", GUILayout.Width(LabelWidth));
-            GUI.enabled = false;
-            GUILayout.TextField(_profilePath, GUILayout.MinWidth(400));
-            GUI.enabled = true;
-            if (GUILayout.Button("Load Profile", GUILayout.Width(LabelWidth)))
-            {
-                string selected = EditorUtility.OpenFilePanel("Profile", BuilderUtils.BuildProfileDirectory(), "args*");
-                if (!string.IsNullOrEmpty(selected))
-                {
-                    _profilePath = selected;
-                    LoadProfile(_profilePath);
-                }
-            }
+            EditorGUI.BeginDisabledGroup(true);
+            GUILayout.Label(EditorContents.TextBuildProfile, EditorUISize.S.MaxLabelWidth);
+            GUILayout.TextField(_profilePath, EditorUISize.S.MinOnelineInputWidth, GUILayout.ExpandWidth(true));            
             GUILayout.EndHorizontal();
+            EditorGUI.EndDisabledGroup();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Environment", GUILayout.Width(LabelWidth));
+            GUILayout.Label(EditorContents.TextBuildEnvironment , EditorUISize.S.MaxButtonWidth);
             _environment = (EEnvironment)EditorGUILayout.EnumPopup(_environment);
             GUILayout.EndHorizontal();
 
             if (EditorGUI.EndChangeCheck())
             {
-                _profilePath = GetDefaultProfilePath();
-                LoadProfile(_profilePath);
+                ReloadBuildProfile();
             }
 
             EditorGUI.BeginChangeCheck();
-            foreach (string key in _definedParams.Keys)
+            foreach (string key in _params2Declares.Values)
             {
                 if (_ignoreParams.Contains(key)) continue;
 
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(key, GUILayout.Width(LabelWidth));
-                _tempParams[key] = GUILayout.TextField(_definedParams[key], GUILayout.MinWidth(400));
+                GUILayout.Label(key, EditorUISize.S.MaxLabelWidth);
+                if (!_definedParams.ContainsKey(key))
+                {
+                    _definedParams.Add(key, string.Empty);
+                }
+                _definedParams[key] = GUILayout.TextField(_definedParams[key], EditorUISize.S.MinOnelineInputWidth);
                 GUILayout.EndHorizontal();
             }
 
-            if (EditorGUI.EndChangeCheck())
-            {
-                foreach (string key in _tempParams.Keys)
-                {
-                    if (_tempParams[key] != _definedParams[key])
-                    {
-                        _definedParams[key] = _tempParams[key];
-                    }
-                }
-            }
-
-            if (GUILayout.Button("Save", GUILayout.Width(LabelWidth)))
+            if (GUILayout.Button(EditorContents.CTASave, EditorUISize.S.MaxButtonWidth))
             {
                 StringBuilder content = new();
                 foreach (KeyValuePair<string, string> pair in _params2Declares)
@@ -114,6 +95,8 @@ namespace BonGames.EasyBuilder
 
         private bool LoadProfile(string profilePath)
         {
+            _definedParams.Clear();
+
             if (!File.Exists(profilePath)) return false;
 
             Dictionary<string, string> loaded = ArgumentsResolver.LoadArguments(_profilePath);
@@ -121,12 +104,17 @@ namespace BonGames.EasyBuilder
             {
                 if (_params2Declares.ContainsKey(pair.Key))
                 {
-                    _tempParams[_params2Declares[pair.Key]] = pair.Value;
                     _definedParams[_params2Declares[pair.Key]] = pair.Value;
                 }
             }
 
             return true;
+        }
+
+        private void ReloadBuildProfile()
+        {
+            _profilePath = GetDefaultProfilePath();
+            LoadProfile(_profilePath);
         }
     }
 }

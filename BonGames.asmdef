@@ -1,6 +1,6 @@
 {
-    "name": "BonGames.Tools",
-    "rootNamespace": "BonGames.Tools",
+    "name": "BonGames",
+    "rootNamespace": "BonGames",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

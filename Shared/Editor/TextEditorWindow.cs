@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
+using BonGames.Shared;
 
 namespace BonGames.Tools
 {
@@ -30,7 +31,7 @@ namespace BonGames.Tools
 
         private void OnGUI()
         {
-            GUILayout.Label("Text Editor", EditorStyles.boldLabel);
+            GUILayout.Label("Text Editor", UnityEditor.EditorStyles.boldLabel);
             EditorGUILayout.Space();
 
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
@@ -42,18 +43,18 @@ namespace BonGames.Tools
 
             GUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("Clear"))
+            if (GUILayout.Button(EditorContents.CTAClear))
             {
-                _text = "";
+                _text = string.Empty;
                 _scrollPosition = Vector2.zero;
             }
 
-            if (GUILayout.Button("Copy to Clipboard"))
+            if (GUILayout.Button(EditorContents.CTACopyToClipboard))
             {
                 EditorGUIUtility.systemCopyBuffer = _text;
             }
 
-            if (GUILayout.Button("Complete"))
+            if (GUILayout.Button(EditorContents.CTAComplete))
             {
                 if (OnFinishEvent != null)
                 {

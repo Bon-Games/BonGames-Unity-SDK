@@ -1,7 +1,7 @@
 {
-  "name": "com.bon-games.tools",
+  "name": "com.bon-games.unity-sdk",
   "version": "0.0.1",
-  "displayName": "BonGames Tools",
+  "displayName": "BonGames Unity SDK",
   "description": "Unity Project Builder which supports batch mode to integrate CIDI.",
   "unity": "2018.3",  
   "keywords": [
