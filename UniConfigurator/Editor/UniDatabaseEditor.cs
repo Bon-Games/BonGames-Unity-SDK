@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using BonGames.Shared;
 using BonGames.Tools;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
@@ -19,31 +20,24 @@ namespace BonGames.UniConfigurator
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
-
             if (_target == null) return;
+            
             GUILayout.BeginVertical();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Database");
-            if (GUILayout.Button("Reload Types"))
-            {
-                _typeFactory = new UniRecordTypes<T>();
-            }
-            if (GUILayout.Button("Clear"))
-            {
-                _target.Clear();
-            }
-            GUILayout.EndHorizontal();
-
             for (int i = 0; i < _target.Count; i++)
             {
                 DrawConfigJsonArea(i);
             }
-
             GUILayout.Space(20);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("+"))
+            if (GUILayout.Button(EditorContents.IconClear, EditorCustomStyles.CriticalIcon, EditorUISize.M.Icon))
+            {
+                _target.Clear();
+            }
+            if (GUILayout.Button(EditorContents.IconRefresh, EditorUISize.M.Icon))
+            {
+                _typeFactory = new UniRecordTypes<T>();
+            }
+            if (GUILayout.Button(EditorContents.IconAdd, EditorUISize.M.Icon))
             {
                 GenericMenu typeMenu = new GenericMenu() { allowDuplicateNames = false };
                 foreach (string id in _typeFactory.CreatableIds())
@@ -58,7 +52,7 @@ namespace BonGames.UniConfigurator
                 }
                 typeMenu.ShowAsContext();
             }
-            if (GUILayout.Button("-"))
+            if (GUILayout.Button(EditorContents.IconRemove, EditorUISize.M.Icon))
             {
                 if (_target.Count > 0)
                 {
@@ -88,30 +82,30 @@ namespace BonGames.UniConfigurator
 
             GUILayout.Label($"Item {index}:");
 
-            if (GUILayout.Button("Remove"))
+            if (GUILayout.Button(EditorContents.IconDelete, EditorUISize.S.MaxButtonWidth))
             {
                 _target.RemoveAt(index);
                 _target.SetThisDirty();
             }
 
-            if (GUILayout.Button("Copy to Clipboard"))
+            if (GUILayout.Button(EditorContents.IconCopy, EditorUISize.S.MaxButtonWidth))
             {
                 EditorGUIUtility.systemCopyBuffer = json;
             }
 
-            if (GUILayout.Button("Edit"))
+            if (GUILayout.Button(EditorContents.IconEdit, EditorUISize.S.MaxButtonWidth))
             {
                 EditConfigurationJson(index);
             }
 
-            if (GUILayout.Button("Re-format"))
+            if (GUILayout.Button(EditorContents.IconFormat, EditorUISize.S.MaxButtonWidth))
             {
                 string jsonFormat = _target.GetRawValue(index);                
                 _target[index] = UniDatabase<T>.Deserialize(jsonFormat);
                 _target.SetThisDirty();
             }
 
-            if (GUILayout.Button("Duplicate"))
+            if (GUILayout.Button(EditorContents.IconDuplicate, EditorUISize.S.MaxButtonWidth))
             {
                 JObject currentObject = JObject.Parse(_target.GetRawValue(index));
                 if (currentObject.SelectToken(nameof(IUniRecord.Guid)) != null)

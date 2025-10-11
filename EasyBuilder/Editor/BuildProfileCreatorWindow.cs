@@ -50,7 +50,7 @@ namespace BonGames.EasyBuilder
             EditorGUI.EndDisabledGroup();
             if (!_doesProfileExist)
             {
-                GUILayout.Label(EditorContents.IconDoesntExistWarning, EditorCustomStyles.Warning, Shared.EditorUISize.S.Icon);
+                GUILayout.Label(EditorContents.IconDoesntExistWarning, EditorCustomStyles.WarningIcon, Shared.EditorUISize.S.Icon);
             }
             GUILayout.EndHorizontal();
 

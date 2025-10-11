@@ -13,6 +13,7 @@ namespace BonGames.EasyBuilder
             AppBuilder = 0,
             DlcBuilder = 1,
             BuildProfileCreator = 2,
+            BuildProcessorsEditor = 3,
         }
         [MenuItem("BonGames/Easy Builder Editor")]
         public static void ShowWindow()
@@ -40,6 +41,7 @@ namespace BonGames.EasyBuilder
                     { EWindow.AppBuilder, new PlayerBuilderWindow() },
                     { EWindow.DlcBuilder, new DlcBuilderWindow() },
                     { EWindow.BuildProfileCreator, new BuildProfileCreatorWindow() },
+                    { EWindow.BuildProcessorsEditor, new BuildProcesssorsEditorWindow() },
                 };
             }
         }

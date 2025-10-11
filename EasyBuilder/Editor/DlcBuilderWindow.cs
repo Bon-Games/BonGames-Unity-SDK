@@ -40,7 +40,6 @@ namespace BonGames.EasyBuilder
 
     public class DlcBuilderWindow : IEditorWindow
     {
-        private EAppTarget _appTarget = EAppTarget.Client;
         private EEnvironment _environment = EEnvironment.Development;
         private BuildTarget _buildTarget = BuildTarget.Android;
         
