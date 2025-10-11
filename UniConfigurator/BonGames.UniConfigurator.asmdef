@@ -1,0 +1,17 @@
+{
+    "name": "BonGames.UniConfigurator",
+    "rootNamespace": "BonGames.UniConfigurator",
+    "references": [
+        "GUID:ac1ce8ec42af1ca4daeac083e04303bd",
+        "GUID:40cc91eb0cf685542889d94911651d69"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

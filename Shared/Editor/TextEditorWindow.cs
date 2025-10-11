@@ -1,0 +1,64 @@
+#if UNITY_EDITOR
+using UnityEngine;
+using UnityEditor;
+using BonGames.Shared;
+
+namespace BonGames.Tools
+{
+    public class TextEditorWindow : EditorWindow
+    {
+        private string _text = "Enter your text here...";
+        private Vector2 _scrollPosition = Vector2.zero;
+
+        public event System.Action<string> OnFinishEvent;
+
+        public static TextEditorWindow GetOrCreateWindow()
+        {
+            return GetWindow<TextEditorWindow>("Text Editor");
+        }
+
+        public TextEditorWindow SetText(string text)
+        {
+            _text = text;
+            return this;
+        }
+
+        private void OnGUI()
+        {
+            GUILayout.Label("Text Editor", UnityEditor.EditorStyles.boldLabel);
+            EditorGUILayout.Space();
+
+            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
+            _text = EditorGUILayout.TextArea(_text, GUILayout.ExpandHeight(true));
+
+            EditorGUILayout.EndScrollView();
+
+            EditorGUILayout.Space();
+
+            GUILayout.BeginHorizontal();
+
+            if (GUILayout.Button(EditorContents.CTAClear))
+            {
+                _text = string.Empty;
+                _scrollPosition = Vector2.zero;
+            }
+
+            if (GUILayout.Button(EditorContents.CTACopyToClipboard))
+            {
+                EditorGUIUtility.systemCopyBuffer = _text;
+            }
+
+            if (GUILayout.Button(EditorContents.CTAComplete))
+            {
+                if (OnFinishEvent != null)
+                {
+                    OnFinishEvent.Invoke(_text);
+                }
+                this.Close();
+            }
+
+            GUILayout.EndHorizontal();
+        }
+    }
+}
+#endif
