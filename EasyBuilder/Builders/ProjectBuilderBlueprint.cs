@@ -22,6 +22,6 @@ namespace BonGames.EasyBuilder
 
     public interface IPostBuildProcess : IUniRecord
     {
-        public void OnPostBuild(BuildReport report, IProjectBuilder builder);
+        public void OnPostBuild(BuildReport report, IProjectBuilder builder, string outputBuiltProject);
     }
 }

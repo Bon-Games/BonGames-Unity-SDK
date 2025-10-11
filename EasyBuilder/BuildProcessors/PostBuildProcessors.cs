@@ -13,12 +13,13 @@ namespace BonGames.EasyBuilder
     [CreateAssetMenu(fileName = "PostBuildProcessors", menuName = "Easy Builder/PostBuildProcessors", order = 1)]
     public class PostBuildProcessors : UniConfigurator.UniDatabase<IPostBuildProcess>
     {
-        public void Execute(UnityEditor.Build.Reporting.BuildReport report, IProjectBuilder builder)
+        public void Execute(UnityEditor.Build.Reporting.BuildReport report, IProjectBuilder builder, string outputBuiltProject)
         {
+            EasyBuilder.LogI($"Post Build Processing .. outputBuiltProject: {outputBuiltProject}");
             for (int i = 0; i < Count; i++)
             {
                 EasyBuilder.LogI($"Post Build Processing .. {this[i]}");
-                this[i].OnPostBuild(report, builder);
+                this[i].OnPostBuild(report, builder, outputBuiltProject);
             }
         }
     }

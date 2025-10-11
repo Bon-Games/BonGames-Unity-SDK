@@ -104,7 +104,8 @@ namespace BonGames.EasyBuilder
                     PostBuildProcessors postProcessors = BuilderUtils.GetPostProcessors(BuildArguments.GetPostProcessorsBuild(), Environment);
                     if (postProcessors != null)
                     {
-                        postProcessors.Execute(report, this);
+                        string builtLocation = System.IO.Directory.Exists(report.summary.outputPath) ? report.summary.outputPath : System.IO.Path.GetDirectoryName(report.summary.outputPath);
+                        postProcessors.Execute(report, this, builtLocation);
                     }
                 }
                 else
@@ -167,10 +168,7 @@ namespace BonGames.EasyBuilder
 
         protected virtual BuildPlayerOptions CreateBuildPlayerOptions()
         {
-            string buildLocation = BuildArguments.GetBuildDestination();
-            string nonMobileChildFolder = !BuilderUtils.IsMobile(BuildTarget) ? GetOutputArchiveName() : null;
-            buildLocation = !string.IsNullOrEmpty(buildLocation) ? buildLocation : BuilderUtils.GetPlatformBuildFolder(BuildTarget, AppTarget, nonMobileChildFolder);
-
+            string buildLocation = GetBuildLocation();
             BuildPlayerOptions buildPlayerOptions = GetDefaultBuildPlayerOptions();
             buildPlayerOptions.locationPathName = Path.Combine(buildLocation, BuildFileName());
             buildPlayerOptions.targetGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
@@ -185,6 +183,14 @@ namespace BonGames.EasyBuilder
         protected virtual void OnBuildPlayerOptionCreate(ref BuildPlayerOptions ops)
         {
 
+        }
+
+        private string GetBuildLocation()
+        {
+            string buildLocation = BuildArguments.GetBuildDestination();
+            string nonMobileChildFolder = !BuilderUtils.IsMobile(BuildTarget) ? GetOutputArchiveName() : null;
+            buildLocation = !string.IsNullOrEmpty(buildLocation) ? buildLocation : BuilderUtils.GetPlatformBuildFolder(BuildTarget, AppTarget, nonMobileChildFolder);
+            return buildLocation;
         }
 
         private string BuildFileName()
