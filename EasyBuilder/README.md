@@ -41,3 +41,18 @@ It also includes flexible pre- and post-build processing using ScriptableObject 
 - Choose Dlc profile, Environment and Build Target.
 - Press the `Build` button
 ![Dlc Builder Window](./Documentation~/dlc-builder-window.png)
+
+### Pre/Post Processor Build Editor
+- In Unity, go to Toolbar → BonGames → Easy Builder Editor
+- Open the `Build Processors Editor` window
+#### Create a new build processor collection
+- Choose the Processor type.
+- Give it a name.
+- Press the `Create New` button.
+![Build Processors Editor](./Documentation~/create-a-build-processors.png)
+
+#### Editor a exising build processor collection
+- Choose the Processor type.
+- Choose the object from the object selection field.
+![Choose](./Documentation~/editor-existing-build-processor-collection-1.png)
+![Editor](./Documentation~/editor-existing-build-processor-collection-2.png)
