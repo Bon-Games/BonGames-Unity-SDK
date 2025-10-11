@@ -66,7 +66,7 @@ namespace BonGames.EasyBuilder
             _dlcProfileId = EditorGUILayout.Popup(_dlcProfileId, _profileOptions, EditorUISize.S.MaxButtonWidth);
             GUILayout.EndHorizontal();
 
-            EditorGUI.BeginDisabledGroup(_profileOptions.Length > 0);
+            EditorGUI.BeginDisabledGroup(_profileOptions.Length == 0);
             GUILayout.BeginHorizontal();
             GUILayout.Label(EditorContents.TextBuildEnvironment, EditorUISize.S.MaxLabelWidth);
             _environment = (EEnvironment)EditorGUILayout.EnumPopup(_environment, EditorUISize.S.MaxButtonWidth);
