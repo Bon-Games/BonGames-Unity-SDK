@@ -1,5 +1,5 @@
 # Introduction - Bon Games SDK
-Bon Games DevKit is a modular development toolkit for Unity designed to improve productivity, streamline workflows, and support scalable game development. It provides a collection of tools, utilities, and development standards that help teams build, manage, and maintain projects more efficiently.
+Bon Games SDK is a modular development toolkit for Unity designed to improve productivity, streamline workflows, and support scalable game development. It provides a collection of tools, utilities, and development standards that help teams build, manage, and maintain projects more efficiently.
 
 # Features
 - [Easy Builder](./EasyBuilder/README.md)
