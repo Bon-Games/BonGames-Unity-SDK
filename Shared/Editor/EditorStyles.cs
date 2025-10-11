@@ -42,7 +42,7 @@ namespace BonGames.Shared
         public static readonly GUIContent CTASave               = new GUIContent("Save", "Start Build");
         public static readonly GUIContent CTAEditorSetup        = new GUIContent("Editor Setup", "Start Editor Setup");
 
-        public static readonly GUIContent TextTab               = new GUIContent("Tab", string.Empty);
+        public static readonly GUIContent TextWindow            = new GUIContent("Window", string.Empty);
         public static readonly GUIContent TextBuildProfile      = new GUIContent("Build Profile", string.Empty);
         public static readonly GUIContent TextDlcProfile        = new GUIContent("Dlc Profile", string.Empty);
         public static readonly GUIContent TextBuildEnvironment  = new GUIContent("Environment", "Build Environment");

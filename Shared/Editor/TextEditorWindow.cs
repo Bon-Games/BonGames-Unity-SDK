@@ -12,12 +12,6 @@ namespace BonGames.Tools
 
         public event System.Action<string> OnFinishEvent;
 
-        [MenuItem("BonGames/Text Editor")]
-        public static void ShowWindow()
-        {
-            GetOrCreateWindow();
-        }
-
         public static TextEditorWindow GetOrCreateWindow()
         {
             return GetWindow<TextEditorWindow>("Text Editor");

@@ -52,7 +52,7 @@ namespace BonGames.EasyBuilder
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
-            GUILayout.Label(EditorContents.TextTab, EditorUISize.S.MaxLabelWidth);
+            GUILayout.Label(EditorContents.TextWindow, EditorUISize.S.MaxLabelWidth);
             _activeWindow = (EWindow)EditorGUILayout.EnumPopup(_activeWindow, EditorUISize.S.MaxButtonWidth);
             GUILayout.EndHorizontal();
 
