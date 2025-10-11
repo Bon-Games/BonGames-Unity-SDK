@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 // #define UNITY_ADDRESSABLE
 
 using BonGames.EasyBuilder.Enum;
@@ -5,8 +6,11 @@ using BonGames.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.AddressableAssets;
 using UnityEngine;
+
+#if UNITY_ADDRESSABLE
+using UnityEditor.AddressableAssets;
+#endif
 
 namespace BonGames.EasyBuilder
 {
@@ -89,3 +93,4 @@ namespace BonGames.EasyBuilder
     }
 
 }
+#endif
