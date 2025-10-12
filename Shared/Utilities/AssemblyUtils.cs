@@ -7,42 +7,33 @@ namespace BonGames.Tools
 {
     public static class AssemblyUtils
     {
+        public const string UnityAssemblyCSharp = "Assembly-CSharp";
+
         public static IEnumerable<Assembly> GetDependentAssemblies(Assembly targetAssembly)
         {
-            var targetName = targetAssembly.GetName().Name;
-
+            string targetName = targetAssembly.GetName().Name;
             return AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => a.GetReferencedAssemblies().Any(r => r.Name == targetName));
+                    .Where(a => a.GetName().Name.Equals(UnityAssemblyCSharp) || a.GetReferencedAssemblies().Any(r => r.Name.Equals(targetName)));
         }
 
         public static IEnumerable<Type> GetTypesByAttribute<TAttribute>(Type baseType, bool includeDependent) where TAttribute : Attribute
         {
-            Assembly baseAssembly = Assembly.GetAssembly(baseType);
-            IEnumerable<Type> typesInBaseAssembly = Assembly.GetAssembly(baseType).GetTypes().Where(t => t.GetCustomAttribute<TAttribute>() != null);
-            if (includeDependent)
-            {
-                IEnumerable<Assembly> dependentAssemblies = AssemblyUtils.GetDependentAssemblies(baseAssembly);
-                foreach (Assembly dependent in dependentAssemblies)
-                {
-                    typesInBaseAssembly.Union(dependent.GetTypes().Where(t => t.GetCustomAttribute<TAttribute>() != null));
-                }
-            }
-            return typesInBaseAssembly;
+            return GetTypes(baseType, includeDependent).Where(t => t.GetCustomAttribute<TAttribute>() != null);
         }
 
         public static IEnumerable<Type> GetTypes(Type baseType, bool includeDependent)
         {
             Assembly baseAssembly = Assembly.GetAssembly(baseType);
-            IEnumerable<Type> typesInBaseAssembly = Assembly.GetAssembly(baseType).GetTypes();
+            List<Type> types = new List<Type>(baseAssembly.GetTypes());
             if (includeDependent)
             {
                 IEnumerable<Assembly> dependentAssemblies = AssemblyUtils.GetDependentAssemblies(baseAssembly);
                 foreach (Assembly dependent in dependentAssemblies)
                 {
-                    typesInBaseAssembly.Union(dependent.GetTypes());
+                    types.AddRange(dependent.GetTypes()); 
                 }
             }
-            return typesInBaseAssembly;
+            return types;
         }
 
         public static object GetValueByPath(object target, params string[] parts)

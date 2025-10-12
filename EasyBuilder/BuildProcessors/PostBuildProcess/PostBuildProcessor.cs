@@ -9,7 +9,7 @@ using UnityEditor.Callbacks;
 using System.Xml;
 using System.IO;
 #if UNITY_IOS
-using AppleAuth.Editor;
+
 using UnityEditor.iOS.Xcode;
 #endif
 
@@ -123,7 +123,7 @@ public class PostBuildProcessor : IPostBuildProcess
 			var project = new PBXProject();
 			project.ReadFromString(System.IO.File.ReadAllText(projectPath));
 			var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
-			manager.AddSignInWithAppleWithCompatibility();
+			manager.AddSignInWithApple();
 			manager.WriteToFile();
 
 
