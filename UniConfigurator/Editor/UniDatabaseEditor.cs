@@ -20,48 +20,57 @@ namespace BonGames.UniConfigurator
 
         public override void OnInspectorGUI()
         {
-            if (_target == null) return;
-            
-            GUILayout.BeginVertical();
-            for (int i = 0; i < _target.Count; i++)
+            try
             {
-                DrawConfigJsonArea(i);
-            }
-            GUILayout.Space(20);
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button(EditorContents.IconClear, EditorCustomStyles.CriticalIcon, EditorUISize.M.Icon))
-            {
-                _target.Clear();
-            }
-            if (GUILayout.Button(EditorContents.IconRefresh, EditorUISize.M.Icon))
-            {
-                _typeFactory = new UniRecordTypes<T>();
-            }
-            if (GUILayout.Button(EditorContents.IconAdd, EditorUISize.M.Icon))
-            {
-                GenericMenu typeMenu = new GenericMenu() { allowDuplicateNames = false };
-                foreach (string id in _typeFactory.CreatableIds())
+                if (_target == null) return;
+                
+                GUILayout.BeginVertical();
+                for (int i = 0; i < _target.Count; i++)
                 {
-                    string captureId = id;
-                    typeMenu.AddItem(new GUIContent(captureId), false, () =>
+                    DrawConfigJsonArea(i);
+                }
+                GUILayout.Space(20);
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button(EditorContents.IconClear, EditorCustomStyles.CriticalIcon, EditorUISize.M.Icon))
+                {
+                    _target.Clear();
+                }
+                if (GUILayout.Button(EditorContents.IconRefresh, EditorUISize.M.Icon))
+                {
+                    _typeFactory = new UniRecordTypes<T>();
+                }
+                if (GUILayout.Button(EditorContents.IconAdd, EditorUISize.M.Icon))
+                {
+                    GenericMenu typeMenu = new GenericMenu() { allowDuplicateNames = false };
+                    foreach (string id in _typeFactory.CreatableIds())
                     {
-                        T config = _typeFactory.Create(captureId);
-                        _target.Add(config);
-                        _target.SetThisDirty();
-                    });
+                        string captureId = id;
+                        typeMenu.AddItem(new GUIContent(captureId), false, () =>
+                        {
+                            T config = _typeFactory.Create(captureId);
+                            _target.Add(config);
+                            _target.SetThisDirty();
+                        });
+                    }
+                    typeMenu.ShowAsContext();
                 }
-                typeMenu.ShowAsContext();
-            }
-            if (GUILayout.Button(EditorContents.IconRemove, EditorUISize.M.Icon))
-            {
-                if (_target.Count > 0)
+                if (GUILayout.Button(EditorContents.IconRemove, EditorUISize.M.Icon))
                 {
-                    _target.RemoveAt(_target.Count - 1);
-                    _target.SetThisDirty();
+                    if (_target.Count > 0)
+                    {
+                        _target.RemoveAt(_target.Count - 1);
+                        _target.SetThisDirty();
+                    }
                 }
+                GUILayout.EndHorizontal();
+                GUILayout.EndVertical();
+
             }
-            GUILayout.EndHorizontal();
-            GUILayout.EndVertical();
+            catch (System.Exception e)
+            {
+                Domain.LogE($"{e}");
+                EditorGUIUtility.ExitGUI();
+            }
         }
 
         private void DrawConfigJsonArea(int index)

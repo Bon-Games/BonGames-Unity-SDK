@@ -46,7 +46,7 @@ namespace BonGames.UniConfigurator
 
         public string GetRawValue(int index)
         {
-            return _configurationJsons[index];
+            return index < _configurationJsons.Count ? _configurationJsons[index] : string.Empty;
         }
 
         public T GetConfigurationById(string id)
