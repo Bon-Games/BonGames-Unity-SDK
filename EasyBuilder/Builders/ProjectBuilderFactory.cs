@@ -24,6 +24,9 @@ namespace BonGames.EasyBuilder
                 case BuildTarget.iOS:
                     s_instance = new IOSBuilder(buildEvn);
                     break;
+                case BuildTarget.WebGL:
+                    s_instance = new WebGLBuilder(buildEvn);
+                    break;
             }
 
             if (BuilderUtils.IsStandalone(target))
