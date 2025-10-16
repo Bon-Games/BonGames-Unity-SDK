@@ -195,6 +195,8 @@ namespace BonGames.EasyBuilder
                 case BuildTarget.StandaloneOSX:
                 case BuildTarget.StandaloneLinux64:
                     return BuildTargetGroup.Standalone;
+                case BuildTarget.WebGL:
+                    return BuildTargetGroup.WebGL;
                 default:
                     throw new System.Exception($"The build target {target} is not supported to get group");
             }
