@@ -1,8 +1,11 @@
-#if UNITY_EDITOR && UNITY_IOS
+#if UNITY_EDITOR
 using System.IO;
 using Newtonsoft.Json;
 using UnityEditor.Build.Reporting;
+
+#if UNITY_IOS
 using UnityEditor.iOS.Xcode;
+#endif
 
 namespace BonGames.EasyBuilder
 {
