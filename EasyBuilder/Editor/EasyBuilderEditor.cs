@@ -52,13 +52,23 @@ namespace BonGames.EasyBuilder
             EditorGUILayout.Space();
 
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
+            IEditorWindow p = null;
+
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
             GUILayout.Label(EditorContents.TextWindow, EditorUISize.S.MaxLabelWidth);
+            EditorGUI.BeginChangeCheck();
             _activeWindow = (EWindow)EditorGUILayout.EnumPopup(_activeWindow, EditorUISize.S.MaxButtonWidth);
+            if (EditorGUI.EndChangeCheck()) 
+            {
+                if (_pages != null && _pages.TryGetValue(_activeWindow, out p) && p != null)
+                {
+                    p.OnFocus(this);
+                }
+            }
             GUILayout.EndHorizontal();
 
-            if (_pages != null && _pages.TryGetValue(_activeWindow, out IEditorWindow p) && p != null)
+            if (_pages != null && _pages.TryGetValue(_activeWindow, out p) && p != null)
             {
                 p.DrawGUI(this);
             }

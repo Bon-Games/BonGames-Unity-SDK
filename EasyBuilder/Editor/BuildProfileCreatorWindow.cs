@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace BonGames.EasyBuilder
 {
-    public class BuildProfileCreatorWindow : IEditorWindow
+    public class BuildProfileCreatorWindow : BaseEditorWindow
     {
         private readonly Dictionary<string, string> _definedParams;
         private readonly Dictionary<string, string> _params2Declares;
@@ -36,11 +36,11 @@ namespace BonGames.EasyBuilder
         {
             _definedParams = ArgumentsExpander.GetDefinedArguments().ToDictionary(it => it.Key, it => string.Empty);
             _params2Declares = ArgumentsExpander.GetDefinedArguments().ToDictionary(it => it.Value, it => it.Key);
-
+            _environment = EEnvironment.Development;
             ReloadBuildProfile();
         }
 
-        public void DrawGUI(IEasyBuilderEditor parent)
+        public override void DrawGUI(IEasyBuilderEditor parent)
         {
             EditorGUI.BeginChangeCheck();
             GUILayout.BeginHorizontal();

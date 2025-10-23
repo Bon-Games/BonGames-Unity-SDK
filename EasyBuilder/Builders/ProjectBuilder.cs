@@ -168,9 +168,8 @@ namespace BonGames.EasyBuilder
 
         protected virtual BuildPlayerOptions CreateBuildPlayerOptions()
         {
-            string buildLocation = GetBuildLocation();
             BuildPlayerOptions buildPlayerOptions = GetDefaultBuildPlayerOptions();
-            buildPlayerOptions.locationPathName = Path.Combine(buildLocation, BuildFileName());
+            buildPlayerOptions.locationPathName = BuilderUtils.GetBuildLocationWithExecFile(AppTarget, BuildTarget, Environment, Version);
             buildPlayerOptions.targetGroup = BuilderUtils.GetBuildTargetGroup(BuildTarget);
             buildPlayerOptions.subtarget = BuilderUtils.GetSubBuildTarget(AppTarget, BuildTarget);
             buildPlayerOptions.scenes = GetActiveScenes();
@@ -183,44 +182,6 @@ namespace BonGames.EasyBuilder
         protected virtual void OnBuildPlayerOptionCreate(ref BuildPlayerOptions ops)
         {
 
-        }
-
-        private string GetBuildLocation()
-        {
-            string buildLocation = BuildArguments.GetBuildDestination();
-            string nonMobileChildFolder = !BuilderUtils.IsMobile(BuildTarget) ? GetOutputArchiveName() : null;
-            buildLocation = !string.IsNullOrEmpty(buildLocation) ? buildLocation : BuilderUtils.GetPlatformBuildFolder(BuildTarget, AppTarget, nonMobileChildFolder);
-            return buildLocation;
-        }
-
-        private string BuildFileName()
-        {
-            if (BuilderUtils.IsMobile(BuildTarget))
-            {
-                // [ExpandedName].[apk,ipa]
-                string outputFileName = GetOutputArchiveName();
-                return $"{BuilderUtils.GetOutputArchiveName(outputFileName)}{BuilderUtils.GetBuildTargetAppExtension(BuildTarget, Environment)}";
-            }
-            else
-            {
-                // [ProductName].[exe,x84_64,ect]
-                string productName = string.IsNullOrEmpty(BuildArguments.GetProductNameCode()) ? BuilderUtils.GetProductName() : BuildArguments.GetProductNameCode();
-                return $"{productName}{BuilderUtils.GetBuildTargetAppExtension(BuildTarget, Environment)}";
-            }
-        }
-
-        private string GetOutputArchiveName()
-        {
-            string outputFileName = string.IsNullOrEmpty(BuildArguments.GetProductNameCode()) ? BuilderUtils.GetProductName() : BuildArguments.GetProductNameCode();
-            if (BuilderUtils.IsMobile(BuildTarget))
-            {
-                outputFileName = $"{outputFileName}-{Environment.Shorten()}-{Version.BundleVersion}({Version.Build})";
-            }
-            else
-            {
-                outputFileName = $"{outputFileName}-{Environment.Shorten()}-{Version.BundleVersion}";
-            }
-            return BuilderUtils.GetOutputArchiveName(outputFileName);
         }
 
         public BuildPlayerOptions GetDefaultBuildPlayerOptions()

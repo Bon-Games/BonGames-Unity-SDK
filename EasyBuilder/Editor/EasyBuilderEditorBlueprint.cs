@@ -6,6 +6,7 @@ namespace BonGames.EasyBuilder
 
     public interface IEditorWindow
     {
+        public void OnFocus(IEasyBuilderEditor parent);
         public void DrawGUI(IEasyBuilderEditor parent);
     }
 }

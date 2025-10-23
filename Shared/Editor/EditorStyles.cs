@@ -73,6 +73,7 @@ namespace BonGames.Shared
         public static readonly GUIContent TextCollection        = new GUIContent("Collection", string.Empty);
         public static readonly GUIContent TextName              = new GUIContent("Name", string.Empty);
         public static readonly GUIContent TextType              = new GUIContent("Type", string.Empty);
+        public static readonly GUIContent TextOutput            = new GUIContent("Output", string.Empty);
 
         public static readonly GUIContent IconDoesntExistWarning    = new GUIContent("\u26A0", "Doesn't exist");
         public static readonly GUIContent IconAdd                   = new GUIContent("\u271A", "Add");

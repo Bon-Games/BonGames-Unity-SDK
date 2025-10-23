@@ -33,12 +33,15 @@ namespace BonGames.EasyBuilder
         public void DrawGUI()
         {
             EditorGUILayout.BeginVertical();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(EditorContents.TextSelected, EditorUISize.S.MaxLabelWidth);
             EditorGUI.BeginChangeCheck();
-            _unityObject = EditorGUILayout.ObjectField(label: _label, obj: _unityObject, objType: _targetType, allowSceneObjects: _includeSceneObject);
+            _unityObject = EditorGUILayout.ObjectField(obj: _unityObject, objType: _targetType, allowSceneObjects: _includeSceneObject, EditorUISize.S.MinOnelineInputWidth);
             if (EditorGUI.EndChangeCheck())
             {
                 Editor.CreateCachedEditor(_unityObject, null, ref _objectEditor);
             }
+            GUILayout.EndHorizontal();
 
             if (_unityObject != null)
             {
@@ -56,7 +59,7 @@ namespace BonGames.EasyBuilder
         }
     }
 
-    public class BuildProcesssorsEditorWindow : IEditorWindow
+    public class BuildProcesssorsEditorWindow : BaseEditorWindow
     {
         private Processor _processorType;
         private ObjectSelector _processorSelector;
@@ -68,12 +71,12 @@ namespace BonGames.EasyBuilder
             _processorSelector = new ObjectSelector(EditorContents.TextSelected, typeof(PreBuildProcessors), false);
         }
 
-        public void DrawGUI(IEasyBuilderEditor parent)
+        public override void DrawGUI(IEasyBuilderEditor parent)
         {
             GUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
             GUILayout.Label(EditorContents.TextType, EditorUISize.S.MaxLabelWidth);
-            _processorType = (Processor)EditorGUILayout.EnumPopup(_processorType);
+            _processorType = (Processor)EditorGUILayout.EnumPopup(_processorType, EditorUISize.S.MaxButtonWidth);
             if (EditorGUI.EndChangeCheck())
             {
                 _processorSelector = _processorType == Processor.PreProcessor ? new ObjectSelector(EditorContents.TextSelected, typeof(PreBuildProcessors), false)

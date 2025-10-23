@@ -27,11 +27,7 @@ namespace BonGames.EasyBuilder
                     return ".app";
                 case BuildTarget.StandaloneLinux64:
                     return ".x86_64";
-                case BuildTarget.iOS:
-                    return string.Empty; // to be exported to xcode project, not a file
             }
-
-            EasyBuilder.LogE($"{Tag} Get extension for build target {target} is not supported yet");
             return string.Empty;
         }
 
@@ -136,30 +132,10 @@ namespace BonGames.EasyBuilder
             return rootFolder;
         }
 
-        public static string GetPlatformBuildFolder(BuildTarget platformTarget, EAppTarget appTarget, string childFolder = null)
+        public static string GetAppTargetBuildFolder(EAppTarget appTarget)
         {
             string root = GetRootBuiltFolder();
-            string outPath = null;
-            switch (appTarget)
-            {
-                case EAppTarget.Client:
-                    outPath = System.IO.Path.Combine(root, "Client");
-                    break;
-                case EAppTarget.Server:
-                    outPath = System.IO.Path.Combine(root, "Server");
-                    break;
-                default:
-                    throw new System.Exception($"The app tartget {appTarget} is not supported");
-            }
-            if (string.IsNullOrEmpty(childFolder))
-            {
-                outPath = System.IO.Path.Combine(outPath, $"{platformTarget}");
-            }
-            else
-            {
-                outPath = System.IO.Path.Combine(outPath, childFolder, $"{platformTarget}");
-            }
-            return outPath;
+            return System.IO.Path.Combine(root, $"{appTarget}");
         }
 
         public static string GetDefaultProductName()
@@ -373,10 +349,46 @@ namespace BonGames.EasyBuilder
             }
         }
 
-        public static string GetOutputArchiveName(string defValue)
+        public static string GetOutputArchiveName(BuildTarget buildTarget, EEnvironment env, BuildVersion version)
         {
-            string nameWithtouExtension = BuildArguments.GetOutputArchiveName();
-            return string.IsNullOrEmpty(nameWithtouExtension) ? defValue : nameWithtouExtension;
+            string archiveName = BuildArguments.GetOutputArchiveName();
+            if (string.IsNullOrEmpty(archiveName))
+            {
+                string defFileName = string.IsNullOrEmpty(BuildArguments.GetProductNameCode()) ? BuilderUtils.GetProductName() : BuildArguments.GetProductNameCode();
+                if (BuilderUtils.IsMobile(buildTarget))
+                {
+                    return $"{defFileName}-{env.Shorten()}-{version.BundleVersion}({version.Build})";
+                }
+                else
+                {
+                    return $"{defFileName}-{env.Shorten()}-{version.BundleVersion}";
+                }
+
+            }
+            return archiveName;
+        }
+
+        public static string BuildFileName(BuildTarget buildTarget, EEnvironment env, BuildVersion version)
+        {
+            string extension = BuilderUtils.GetBuildTargetAppExtension(buildTarget, env);
+            if (string.IsNullOrEmpty(extension))
+            {
+                return string.Empty;
+            }
+            string outputFileName = BuilderUtils.GetOutputArchiveName(buildTarget, env, version);
+            return $"{outputFileName}{extension}";
+        }
+
+        public static string GetBuildLocation(EAppTarget appTarget, BuildTarget buildTarget, EEnvironment env, BuildVersion version)
+        {
+            string buildLocation = BuildArguments.GetBuildDestination();
+            buildLocation = !string.IsNullOrEmpty(buildLocation) ? buildLocation : BuilderUtils.GetAppTargetBuildFolder(appTarget);
+            return buildLocation;
+        }
+
+        public static string GetBuildLocationWithExecFile(EAppTarget appTarget, BuildTarget buildTarget, EEnvironment env, BuildVersion version)
+        {
+            return System.IO.Path.Combine(GetBuildLocation(appTarget, buildTarget, env, version), $"{buildTarget}", BuildFileName(buildTarget, env, version));
         }
 
         public static PostBuildProcessors GetPostProcessors(string name, EEnvironment env)

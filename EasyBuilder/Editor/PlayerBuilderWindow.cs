@@ -5,21 +5,22 @@ using UnityEngine;
 
 namespace BonGames.EasyBuilder
 {
-    public class PlayerBuilderWindow : IEditorWindow
+    public class PlayerBuilderWindow : BaseEditorWindow
     {    
         private EAppTarget _appTarget = EAppTarget.Client;
         private EEnvironment _environment = EEnvironment.Development;
         private BuildTarget _buildTarget = BuildTarget.Android;
         private string _activeBuildProfile = null;
         private bool _doesProfileExist = false;
+        private BuildVersion _buildVersion;
         
         public PlayerBuilderWindow()
         {
-            _activeBuildProfile = BuilderUtils.GetActiveBuildProfileFilePath(_environment);
-            _doesProfileExist = System.IO.File.Exists(_activeBuildProfile);
+            _buildTarget = BuilderUtils.GetActiveBuildTarget();
+            LoadBuildProfile();
         }
 
-        public void DrawGUI(IEasyBuilderEditor parent)
+        public override void DrawGUI(IEasyBuilderEditor parent)
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label(EditorContents.TextBuildProfile, Shared.EditorUISize.S.MaxLabelWidth);
@@ -30,6 +31,12 @@ namespace BonGames.EasyBuilder
             {
                 GUILayout.Label(EditorContents.IconDoesntExistWarning, EditorCustomStyles.WarningIcon, Shared.EditorUISize.S.Icon);
             }
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(EditorContents.TextOutput, Shared.EditorUISize.S.MaxLabelWidth);
+            EditorGUI.BeginDisabledGroup(true);
+            GUILayout.TextField(BuilderUtils.GetBuildLocationWithExecFile(_appTarget, _buildTarget, _environment, _buildVersion), Shared.EditorUISize.S.MinOnelineInputWidth, Shared.EditorUISize.ExpandWidth);
+            EditorGUI.EndDisabledGroup();
             GUILayout.EndHorizontal();
 
             EditorGUI.BeginChangeCheck();
@@ -49,8 +56,7 @@ namespace BonGames.EasyBuilder
             GUILayout.EndHorizontal();
             if (EditorGUI.EndChangeCheck())
             {
-                _activeBuildProfile = BuilderUtils.GetActiveBuildProfileFilePath(_environment);
-                _doesProfileExist = System.IO.File.Exists(_activeBuildProfile);
+                LoadBuildProfile();
             }
             GUILayout.BeginHorizontal();
 
@@ -67,6 +73,19 @@ namespace BonGames.EasyBuilder
                 GUIUtility.ExitGUI();
             }
             GUILayout.EndHorizontal();
+        }
+
+        public override void OnFocus(IEasyBuilderEditor parent)
+        {
+            LoadBuildProfile();
+        }
+
+        private void LoadBuildProfile()
+        {
+            _activeBuildProfile = BuilderUtils.GetActiveBuildProfileFilePath(_environment);
+            BonGames.CommandLine.ArgumentsResolver.Load(_activeBuildProfile);
+            _doesProfileExist = System.IO.File.Exists(_activeBuildProfile);
+            _buildVersion = new BuildVersion(true);
         }
     }
 

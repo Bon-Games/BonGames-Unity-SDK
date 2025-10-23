@@ -38,7 +38,7 @@ namespace BonGames.EasyBuilder
         }
     }
 
-    public class DlcBuilderWindow : IEditorWindow
+    public class DlcBuilderWindow : BaseEditorWindow
     {
         private EEnvironment _environment = EEnvironment.Development;
         private BuildTarget _buildTarget = BuildTarget.Android;
@@ -49,6 +49,7 @@ namespace BonGames.EasyBuilder
         public DlcBuilderWindow()
         {
             _dlcProfileId = 0;
+            _buildTarget = BuilderUtils.GetActiveBuildTarget();
 #if UNITY_ADDRESSABLE
             _dlcProfile = new AddressableBuildProfile();
 #endif
@@ -62,7 +63,7 @@ namespace BonGames.EasyBuilder
             }
         }
 
-        public void DrawGUI(IEasyBuilderEditor parent)
+        public override void DrawGUI(IEasyBuilderEditor parent)
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label(EditorContents.TextDlcProfile, EditorUISize.S.MaxLabelWidth);
